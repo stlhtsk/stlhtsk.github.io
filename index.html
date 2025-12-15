@@ -2,49 +2,86 @@
 <html lang="ko">
 <head>
   <meta charset="UTF-8" />
-  <title>복잡한 선택자 예시</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>심학산의 무지개 이미지 세상! 🌈</title>
   <style>
-    /* body 안의 모든 div에 테두리 */
-    body div {
-      border: 1px solid #ddd;
-      padding: 10px;
-      margin: 10px;
+    /* 🌈 무지개 배경 애니메이션 키프레임 */
+    @keyframes rainbow {
+      0% {
+        background-position: 0% 50%;
+      }
+      50% {
+        background-position: 100% 50%;
+      }
+      100% {
+        background-position: 0% 50%;
+      }
     }
 
-    /* main-container 클래스를 가진 div의 직접적인 자식인 p 태그 */
-    .main-container > p {
-      color: blue;
-      font-weight: bold;
+    /* 🎨 전체 페이지 기본 스타일 */
+    body {
+      margin: 0; /* 기본 마진 제거 */
+      min-height: 100vh; /* 화면 전체 높이 사용 */
+      background: linear-gradient( /* 무지개 그라데이션 */
+        270deg, /* 그라데이션 방향 (270도) */
+        #ff0000, /* Red */
+        #ffa500, /* Orange */
+        #ffff00, /* Yellow */
+        #008000, /* Green */
+        #0000ff, /* Blue */
+        #4b0082, /* Indigo */
+        #ee82ee, /* Violet */
+        #ff0000 /* Red (연속성을 위해 다시 Red로 끝남) */
+      );
+      background-size: 1400% 1400%; /* 배경 사이즈를 아주 크게 해서 움직임이 잘 보이도록 */
+      animation: rainbow 20s ease infinite; /* 20초 동안 애니메이션 무한 반복 */
+      display: flex; /* 플렉스박스 레이아웃 (자식 요소들을 정렬하기 위해) */
+      justify-content: center; /* 수평 가운데 정렬 */
+      align-items: center; /* 수직 가운데 정렬 */
+      flex-direction: column; /* 자식 요소들을 세로(컬럼) 방향으로 정렬 */
+      color: white; /* 글자색 흰색 */
+      font-family: 'Arial', sans-serif; /* 폰트 설정 */
+      text-align: center; /* 텍스트 가운데 정렬 */
+      padding: 20px; /* 내부 여백 */
+      box-sizing: border-box; /* 패딩이 요소 크기에 포함되도록 */
     }
 
-    /* .sidebar 클래스를 가진 div 안에 있는 모든 span 태그 */
-    div.sidebar span {
-      background-color: yellow;
-      padding: 3px;
+    /* 🖼️ 이미지들을 담는 컨테이너 스타일 */
+    .image-gallery {
+      background-color: rgba(0, 0, 0, 0.4); /* 배경에 투명도 있는 검은색 박스 */
+      padding: 30px;
+      border-radius: 15px;
+      box-shadow: 0 0 20px rgba(0, 0, 0, 0.5); /* 그림자 효과 */
+      max-width: 90%; /* 최대 너비 설정 */
+      display: flex;
+      flex-direction: column;
+      gap: 20px; /* 이미지 사이 간격 */
     }
 
-    /* .특정클래스 이름으로만 스타일 적용하고 싶을 때 */
-    .highlight {
-      background-color: lightcoral;
+    /* 🖼️ 개별 이미지 스타일 */
+    .image-gallery img {
+      max-width: 100%; /* 부모 컨테이너에 맞춰 크기 조절 */
+      height: auto; /* 비율 유지 */
+      border: 5px solid rgba(255, 255, 255, 0.7); /* 흰색 테두리 */
+      border-radius: 10px; /* 둥근 모서리 */
+      display: block; /* 블록 요소로 만들어서 한 줄에 하나씩 */
+      margin: 0 auto; /* 수평 가운데 정렬 */
+    }
+
+    h1 {
+      margin-bottom: 25px; /* 제목 아래 여백 */
+      font-size: 2.5rem;
+      text-shadow: 2px 2px 5px rgba(0,0,0,0.7);
     }
   </style>
 </head>
 <body>
-  <div class="main-container">
-    <p>나는 메인 컨테이너의 직접적인 자식 p 태그야.</p>
-    <div>
-      <p>나는 메인 컨테이너의 손자 p 태그야.</p>
-    </div>
+  <h1>환영한다, 심학산의 무지개 빛깔 세상! ✨</h1>
+  <div class="image-gallery">
+    <!-- 첫 번째 이미지 (파일 이름을 1.png로 바꿔야 해!) -->
+    <img src="1.png" alt="내 첫 번째 멋진 이미지" /> 
+    <!-- 두 번째 이미지 (파일 이름을 2.png로 바꿔야 해!) -->
+    <img src="2.png" alt="내 두 번째 멋진 이미지" />
   </div>
-
-  <div class="sidebar">
-    <span>나는 사이드바 안에 있는 span 태그 1</span>
-    <p>
-      나는 사이드바 안에 있는 p 태그이고
-      <span>나도 그 안에 있는 span 태그 2</span>
-    </p>
-  </div>
-
-  <p class="highlight">이 문단은 하이라이트 될 거야.</p>
 </body>
 </html>
