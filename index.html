@@ -95,7 +95,7 @@
       overflow: hidden; /* 이미지가 밖으로 나갈 경우 잘라줌 */
     }
 
-    /* 🖼️ 움직이는 개별 이미지 스타일 (기존 image-gallery는 삭제 또는 수정) */
+    /* 🖼️ 움직이는 개별 이미지 스타일 */
     .moving-image {
       position: absolute; /* 절대 위치 지정 */
       width: 150px; /* 이미지 너비 고정 (필요에 따라 조절) */
@@ -206,6 +206,11 @@
     .sidebar-nav ul li a:hover {
       background-color: rgba(255, 255, 255, 0.1); /* 호버 시 배경색 변경 */
     }
+    /* 방문자수 스타일 추가 */
+    .visitor-count-item a {
+      color: lightgreen; /* 방문자수는 다른 색으로 강조 */
+      font-weight: bold;
+    }
   </style>
 </head>
 <body>
@@ -222,6 +227,7 @@
       <li><a href="#">🏡 홈으로</a></li>
       <li><a href="#">🖼️ 나의 갤러리</a></li>
       <li><a href="#">📝 내 작업들</a></li>
+      <li class="visitor-count-item"><a>👀 방문 횟수: <span id="visitorCountDisplay">0</span></a></li> <!-- 방문 횟수 추가 -->
       <li><a href="#">✉️ 연락하기</a></li>
     </ul>
   </nav>
@@ -238,16 +244,33 @@
     const hamburger = document.querySelector('.hamburger-menu');
     const nav = document.querySelector('.sidebar-nav');
 
+    // 방문 횟수 표시 요소를 가져옴
+    const visitorCountDisplay = document.getElementById('visitorCountDisplay');
+    // localStorage에서 저장된 방문 횟수를 가져오거나 없으면 0으로 초기화
+    let visitorCount = localStorage.getItem('hamburgerClickCount') ? parseInt(localStorage.getItem('hamburgerClickCount')) : 0;
+
+    // 방문 횟수 디스플레이를 업데이트하는 함수
+    function updateVisitorCountDisplay() {
+      visitorCountDisplay.textContent = visitorCount;
+    }
+
+    // 페이지 로드 시 초기 방문 횟수 표시
+    updateVisitorCountDisplay();
+
     // 햄버거 메뉴 아이콘을 클릭했을 때 이벤트 리스너 추가
     hamburger.addEventListener('click', () => {
       // 햄버거 아이콘과 내비게이션 메뉴에 'active' 클래스를 토글 (추가/제거)
       hamburger.classList.toggle('active'); // 아이콘 모양 변경
       nav.classList.toggle('active');       // 메뉴 열림/닫힘
+
+      // **여기서 방문 횟수를 증가시키고 localStorage에 저장!**
+      visitorCount++;
+      localStorage.setItem('hamburgerClickCount', visitorCount);
+      updateVisitorCountDisplay(); // 화면에도 바로 업데이트
     });
 
     // 메뉴 바깥쪽을 클릭했을 때 메뉴 닫기 (선택 사항)
     document.addEventListener('click', (event) => {
-      // 햄버거 메뉴나 내비게이션 메뉴 영역이 아닌 곳을 클릭했을 때
       if (!hamburger.contains(event.target) && !nav.contains(event.target)) {
         if (hamburger.classList.contains('active')) {
           hamburger.classList.remove('active');
