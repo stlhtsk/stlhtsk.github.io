@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>꺄룰랭</title>
+  <title>꺄룰랭 - 심학산의 움직이는 갤러리! 🌈💃</title>
   <style>
     /* 🌈 무지개 배경 애니메이션 키프레임 */
     @keyframes rainbow {
@@ -15,6 +15,53 @@
       }
       100% {
         background-position: 0% 50%;
+      }
+    }
+
+    /* 🖼️ 이미지 움직이는 애니메이션 키프레임 (반시계 방향) */
+    @keyframes image-move-1 {
+      0%, 100% {
+        top: 10%;
+        left: 10%;
+        transform: rotate(0deg);
+      }
+      25% {
+        top: 10%;
+        left: 80%;
+        transform: rotate(-90deg); /* 반시계 방향 회전 */
+      }
+      50% {
+        top: 80%;
+        left: 80%;
+        transform: rotate(-180deg);
+      }
+      75% {
+        top: 80%;
+        left: 10%;
+        transform: rotate(-270deg);
+      }
+    }
+
+    @keyframes image-move-2 {
+      0%, 100% {
+        top: 80%;
+        left: 80%;
+        transform: rotate(0deg);
+      }
+      25% {
+        top: 80%;
+        left: 10%;
+        transform: rotate(-90deg); /* 반시계 방향 회전 */
+      }
+      50% {
+        top: 10%;
+        left: 10%;
+        transform: rotate(-180deg);
+      }
+      75% {
+        top: 10%;
+        left: 80%;
+        transform: rotate(-270deg);
       }
     }
 
@@ -44,39 +91,36 @@
       text-align: center;
       padding: 20px;
       box-sizing: border-box;
-      position: relative; /* 햄버거 메뉴를 위한 기준점 설정 */
+      position: relative; /* 자식 이미지들의 absolute positioning 기준 */
+      overflow: hidden; /* 이미지가 밖으로 나갈 경우 잘라줌 */
     }
 
-    /* 🖼️ 이미지들을 담는 컨테이너 스타일 */
-    .image-gallery {
-      background-color: rgba(0, 0, 0, 0.4);
-      padding: 30px;
-      border-radius: 15px;
-      box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
-      max-width: 90%;
-      display: flex;
-      flex-direction: column;
-      gap: 20px;
-      position: relative; /* 이미지 갤러리도 다른 요소 위에 있도록 */
-      z-index: 1; /* z-index로 햄버거 메뉴 뒤에 가려지지 않게 함 */
-    }
-
-    /* 🖼️ 개별 이미지 스타일 */
-    .image-gallery img {
-      max-width: 100%;
-      height: auto;
+    /* 🖼️ 움직이는 개별 이미지 스타일 (기존 image-gallery는 삭제 또는 수정) */
+    .moving-image {
+      position: absolute; /* 절대 위치 지정 */
+      width: 150px; /* 이미지 너비 고정 (필요에 따라 조절) */
+      height: auto; /* 비율 유지 */
       border: 5px solid rgba(255, 255, 255, 0.7);
       border-radius: 10px;
-      display: block;
-      margin: 0 auto;
+      z-index: 5; /* 햄버거 메뉴보다 낮고, 다른 콘텐츠보다 위에 */
+      filter: drop-shadow(0 0 10px rgba(0,0,0,0.8)); /* 그림자 효과 */
+    }
+
+    /* 이미지 1 전용 애니메이션 */
+    .moving-image.image-1 {
+      animation: image-move-1 30s linear infinite; /* 30초 동안 선형(일정속도) 무한 반복 */
+    }
+    /* 이미지 2 전용 애니메이션 */
+    .moving-image.image-2 {
+      animation: image-move-2 30s linear infinite; /* 이미지 1과 반대 방향 시작점 */
     }
 
     h1 {
-      margin-bottom: 25px;
       font-size: 2.5rem;
       text-shadow: 2px 2px 5px rgba(0,0,0,0.7);
-      position: relative;
-      z-index: 1;
+      position: relative; /* 다른 요소보다 위에 보이게 */
+      z-index: 10;
+      margin-top: 100px; /* 움직이는 이미지와 겹치지 않도록 조정 */
     }
 
     /* 🍔 햄버거 메뉴 아이콘 스타일 */
@@ -175,19 +219,18 @@
   <!-- 🧭 사이드바 내비게이션 메뉴 -->
   <nav class="sidebar-nav">
     <ul>
-      <li><a href="#">Home</a></li>
-      <li><a href="#">Gallery</a></li>
-      <li><a href="#">My Story</a></li>
+      <li><a href="#">🏡 홈으로</a></li>
+      <li><a href="#">🖼️ 나의 갤러리</a></li>
+      <li><a href="#">📝 내 작업들</a></li>
+      <li><a href="#">✉️ 연락하기</a></li>
     </ul>
   </nav>
 
   <h1>✨꺄룰랭✨</h1>
-  <div class="image-gallery">
-    <!-- 첫 번째 이미지 (파일 이름을 1.png로 바꿔야 해!) -->
-    <img src="1.png" alt="내 첫 번째 멋진 이미지" />
-    <!-- 두 번째 이미지 (파일 이름을 2.png로 바꿔야 해!) -->
-    <img src="2.png" alt="내 두 번째 멋진 이미지" />
-  </div>
+
+  <!-- 🖼️ 신나게 움직이는 이미지들! -->
+  <img src="1.png" alt="내 첫 번째 신나는 이미지" class="moving-image image-1" />
+  <img src="2.png" alt="내 두 번째 신나는 이미지" class="moving-image image-2" />
 
   <!-- 💻 자바스크립트 코드 (HTML 파일 안에 직접 넣기) -->
   <script>
