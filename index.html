@@ -2,28 +2,46 @@
 <html lang="ko">
 <head>
   <meta charset="UTF-8" />
-  <title>심학산의 이미지 페이지</title>
+  <title>무지개 움직이는 배경</title>
   <style>
-    body {
-      background-color: #121212;
-      color: white;
-      font-family: Arial, sans-serif;
-      text-align: center;
-      padding: 20px;
+    @keyframes rainbow {
+      0% {
+        background-position: 0% 50%;
+      }
+      50% {
+        background-position: 100% 50%;
+      }
+      100% {
+        background-position: 0% 50%;
+      }
     }
-    img {
-      max-width: 80%;
-      height: auto;
-      margin: 20px auto;
-      display: block;
-      border-radius: 8px;
-      box-shadow: 0 0 10px rgba(255,255,255,0.2);
+    body {
+      margin: 0;
+      height: 100vh;
+      background: linear-gradient(
+        270deg,
+        red,
+        orange,
+        yellow,
+        green,
+        blue,
+        indigo,
+        violet,
+        red
+      );
+      background-size: 1400% 1400%;
+      animation: rainbow 20s ease infinite;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      color: white;
+      font-family: 'Arial', sans-serif;
+      font-size: 2rem;
+      text-align: center;
     }
   </style>
 </head>
 <body>
-  <h1>심학산의 이미지 갤러리</h1>
-  <img src="1.png" alt="이미지 1 설명" />
-  <img src="2.png" alt="이미지 2 설명" />
+  무지개가 움직이는 배경이다! 🌈
 </body>
 </html>
