@@ -9,11 +9,16 @@
   <link rel="icon" type="image/png" href="파비콘.png" />
 
   <style>
-    /* 1. 배경 그라데이션 애니메이션 키프레임 */
-    @keyframes vibrant-gradient-move {
+    /* 🔥 배경 그라데이션 애니메이션 키프레임 (대각선 움직임) */
+    @keyframes diagonal-gradient-move {
+        0% { background-position: 0% 0%; }
+        100% { background-position: 100% 100%; }
+    }
+
+    /* ☁️ 구름 움직임 애니메이션 키프레임 */
+    @keyframes cloud-move {
         0% { background-position: 0% 50%; }
-        50% { background-position: 100% 50%; }
-        100% { background-position: 0% 50%; }
+        100% { background-position: 200% 50%; } /* 더 멀리 이동하도록 */
     }
 
     /* 기본 HTML, BODY 스타일 */
@@ -24,24 +29,23 @@
       font-family: 'Arial', sans-serif;
       color: white;
       text-align: center;
-      position: relative; /* 자식 요소들을 위한 위치 기준점 */
+      position: relative;
     }
 
-    /* 2. 더 화려하고 움직이는 배경 그라데이션 적용 */
+    /* 🔥 더 화려하고 움직이는 배경 그라데이션 적용 */
     body {
-      /* 여러 색상으로 구성된 그라데이션 */
+      /* 검정, 보라, 파랑, 자주색 대각선 그라데이션 */
       background: linear-gradient(
-        270deg, /* 그라데이션 방향 */
-        #ff007f, /* 진한 핑크 */
-        #ff8c00, /* 다크 오렌지 */
-        #ffd700, /* 골드 */
-        #32cd32, /* 라임 그린 */
-        #1e90ff, /* 도저 블루 */
-        #9370db, /* 미디엄 퍼플 */
-        #ff007f /* 다시 핑크로 마무리하여 부드러운 연결 */
+        135deg, /* 대각선 방향 */
+        #000000, /* 검정 */
+        #30005a, /* 짙은 보라 */
+        #00004d, /* 짙은 파랑 */
+        #5a004d, /* 짙은 자주색 */
+        #30005a,
+        #000000
       );
       background-size: 400% 400%; /* 그라데이션 사이즈를 키워 움직일 여유 공간 확보 */
-      animation: vibrant-gradient-move 15s ease infinite; /* 15초 동안 애니메이션 무한 반복 */
+      animation: diagonal-gradient-move 20s ease infinite alternate; /* 20초 동안 애니메이션 무한 반복, 왔다갔다 (alternate) */
 
       display: flex;
       justify-content: center;
@@ -50,6 +54,26 @@
       box-sizing: border-box;
       padding: 20px;
     }
+
+    /* ☁️ 구름 레이어 스타일 */
+    .clouds {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 1; /* 파티클 위, 다른 요소들 아래 */
+      pointer-events: none; /* 마우스 이벤트 무시 */
+      /* 구름 효과: 여러 개의 원형 그라데이션 조합 */
+      background-image:
+        radial-gradient(circle at 10% 20%, rgba(255,255,255,0.15) 0%, rgba(255,255,255,0) 70%),
+        radial-gradient(circle at 70% 80%, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0) 60%),
+        radial-gradient(circle at 30% 60%, rgba(255,255,255,0.12) 0%, rgba(255,255,255,0) 80%),
+        radial-gradient(circle at 90% 40%, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0) 50%);
+      background-size: 150% 150%, 180% 180%, 130% 130%, 160% 160%; /* 구름 크기 조절 */
+      animation: cloud-move 50s linear infinite; /* 느리게 이동하는 애니메이션 */
+    }
+
 
     /* 파티클 캔버스 스타일 */
     canvas#particle-canvas {
@@ -65,7 +89,7 @@
       font-size: 2.5rem;
       text-shadow: 2px 2px 5px rgba(0,0,0,0.7);
       margin-bottom: 40px;
-      position: relative; /* 파티클 위로 올라오게 */
+      position: relative; /* 다른 요소들 위에 */
       z-index: 10;
     }
 
@@ -125,22 +149,30 @@
       z-index: 4; /* 맨 위 */
     }
 
-    /* 3. 오른쪽 위에 지구본 스타일 */
-    .earth-icon {
+    /* 🌎 CSS 지구본 스타일 */
+    @keyframes earth-rotate {
+      0% { background-position: 0 0; }
+      100% { background-position: -400% 0; } /* 지구본 텍스쳐가 계속 흐르는 느낌 */
+    }
+
+    .css-earth {
       position: fixed; /* 화면에 고정 */
       top: 20px;
       right: 20px;
-      width: 80px; /* 지구본 크기 조절 */
-      height: auto;
-      z-index: 100; /* 모든 UI 요소보다 위에 오도록 */
-      opacity: 0.8; /* 살짝 투명하게 */
-      animation: earthRotate 20s linear infinite; /* 지구본 자전 애니메이션 */
-    }
-
-    /* 지구본 자전 애니메이션 */
-    @keyframes earthRotate {
-      0% { transform: rotate(0deg); }
-      100% { transform: rotate(360deg); }
+      width: 80px; /* 지구본 크기 */
+      height: 80px; /* 지구본 크기 */
+      border-radius: 50%; /* 완벽한 원 */
+      background: 
+        radial-gradient(circle at 30% 30%, #a8e0ff 0%, #007bff 40%, #0056b3 100%) /* 바다 느낌 */
+        ,linear-gradient(120deg, transparent 45%, rgba(0,128,0,0.4) 50%, rgba(0,128,0,0.6) 55%, transparent 60%) /* 육지 느낌 (간단화) */
+        ,linear-gradient(-30deg, transparent 35%, rgba(0,128,0,0.3) 40%, rgba(0,128,0,0.5) 45%, transparent 50%) /* 추가 육지 느낌 */
+        ;
+      background-size: cover, 100% 100%, 100% 100%; /* 배경 이미지 크기 */
+      background-repeat: no-repeat;
+      box-shadow: 0 0 15px rgba(0, 128, 255, 0.7); /* 빛나는 효과 */
+      overflow: hidden; /* 테두리 밖으로 넘치는 부분 숨김 */
+      z-index: 100; /* 모든 UI 요소보다 위에 */
+      animation: earth-rotate 20s linear infinite; /* 자전 애니메이션 */
     }
   </style>
 </head>
@@ -157,9 +189,11 @@
   <!-- 파티클을 그릴 캔버스 요소 -->
   <canvas id="particle-canvas"></canvas>
 
-  <!-- 4. 지구본 이미지 추가 -->
-  <!-- ⚠️ "지구본.png" 파일이 루트에 있어야 합니다! -->
-  <img src="지구본.png" alt="우주 지구본" class="earth-icon" />
+  <!-- ☁️ 움직이는 구름 레이어 -->
+  <div class="clouds"></div>
+
+  <!-- 🌎 CSS 지구본 추가 -->
+  <div class="css-earth"></div>
 
   <!-- 파티클 애니메이션 자바스크립트 -->
   <script>
@@ -170,7 +204,7 @@
     const particleCount = 200; // 파티클(별) 개수 조절
     let particles = [];
     
-    // 5. 다양한 파티클 색상 배열 추가
+    // 🎨 다양한 파티클 색상 배열
     const particleColors = [
       'rgba(255, 165, 0,',   // 주황
       'rgba(255, 255, 0,',   // 노랑
@@ -199,7 +233,7 @@
       this.speedY = Math.random() * 2 + 1; // 🚀 Y축 이동 속도 (아래로 쏟아지는 속도)
       this.alpha = Math.random(); // 불투명도 (깜빡임 효과에 사용)
       this.alphaChange = 0.01 + Math.random() * 0.01; // 불투명도 변화 속도
-      // 6. 파티클 색상 랜덤 지정
+      // 파티클 색상 랜덤 지정
       this.color = particleColors[Math.floor(Math.random() * particleColors.length)];
     }
 
@@ -226,7 +260,6 @@
     Particle.prototype.draw = function() {
       ctx.beginPath();
       ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
-      // 7. 파티클 색상 적용
       ctx.fillStyle = `${this.color} ${this.alpha})`; 
       ctx.fill();
     }
