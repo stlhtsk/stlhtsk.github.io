@@ -4,6 +4,10 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>꺄룰랭 - 엉덩이 춤추는 캐릭터</title>
+
+  <!-- 파비콘 추가 -->
+  <link rel="icon" type="image/png" href="파비콘.png" />
+
   <style>
     /* 무지개 배경 애니메이션 */
     @keyframes rainbow {
@@ -41,18 +45,16 @@
       z-index: 10;
     }
 
-    /* 캐릭터 컨테이너: 파츠들을 겹치기 위한 부모 */
+    /* 캐릭터 컨테이너 */
     .character-container {
       position: relative;
-      width: 300px;  /* 캐릭터 크기 조절 */
+      width: 300px;
       height: 400px;
       cursor: pointer;
-      animation: bootyShake 1.5s ease-in-out infinite;
-      /* 중앙에 배치 */
       margin: 0 auto;
     }
 
-    /* 모든 파츠는 절대 위치로 겹치기 */
+    /* 파츠 이미지 기본 스타일 */
     .character-container img {
       position: absolute;
       top: 0;
@@ -60,23 +62,43 @@
       width: 100%;
       height: auto;
       user-select: none;
-      pointer-events: none; /* 클릭 등 방해 안 되게 */
+      pointer-events: none;
     }
 
-    /* 엉덩이 흔드는 애니메이션 */
-    @keyframes bootyShake {
-      0%, 100% {
-        transform: translateX(0) rotate(0deg);
-      }
-      25% {
-        transform: translateX(-10px) rotate(-5deg);
-      }
-      50% {
-        transform: translateX(10px) rotate(5deg);
-      }
-      75% {
-        transform: translateX(-10px) rotate(-5deg);
-      }
+    /* 머리 좌우 흔들기 */
+    @keyframes headShake {
+      0%, 100% { transform: translateX(0); }
+      25% { transform: translateX(10px); }
+      50% { transform: translateX(-10px); }
+      75% { transform: translateX(10px); }
+    }
+
+    /* 바지 좌우 움직임 (머리와 반대방향) */
+    @keyframes pantsShake {
+      0%, 100% { transform: translateX(0); }
+      25% { transform: translateX(-10px); }
+      50% { transform: translateX(10px); }
+      75% { transform: translateX(-10px); }
+    }
+
+    /* 머리 애니메이션 적용 */
+    .head {
+      animation: headShake 1.5s ease-in-out infinite;
+      z-index: 3;
+    }
+
+    /* 바지 애니메이션 적용 */
+    .pants {
+      animation: pantsShake 1.5s ease-in-out infinite;
+      z-index: 1;
+    }
+
+    /* 후드와 옷은 고정, 겹침 확인을 위한 z-index 조절 */
+    .hood {
+      z-index: 4;
+    }
+    .clothes {
+      z-index: 2;
     }
   </style>
 </head>
@@ -84,12 +106,11 @@
   <h1>✨ 엉덩이 춤 추는 캐릭터 ✨</h1>
 
   <div class="character-container">
-    <img src="바지.png" alt="바지" class="pants" />
-    <img src="머리.png" alt="머리" class="head" />
-    <img src="옷.png" alt="옷" class="clothes" />
     <img src="후드.png" alt="후드" class="hood" />
+    <img src="옷.png" alt="옷" class="clothes" />
+    <img src="머리.png" alt="머리" class="head" />
+    <img src="바지.png" alt="바지" class="pants" />
   </div>
 
-  <!-- 필요하면 나중에 햄버거 메뉴, JS 추가 가능 -->
 </body>
 </html>
