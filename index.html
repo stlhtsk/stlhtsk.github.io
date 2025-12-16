@@ -3,45 +3,49 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>꺄룰랭 - 엉덩이 춤추는 캐릭터</title>
+  <title>꺄룰랭 - 엉덩이 춤추는 캐릭터 (갤럭시)</title>
 
   <!-- 파비콘 추가 -->
   <link rel="icon" type="image/png" href="파비콘.png" />
 
   <style>
-    /* 무지개 배경 애니메이션 */
-    @keyframes rainbow {
-      0% {background-position: 0% 50%;}
-      50% {background-position: 100% 50%;}
-      100% {background-position: 0% 50%;}
+    /* 기본 HTML, BODY 스타일 (무지개 배경 제거) */
+    html, body {
+      margin: 0; padding: 0;
+      width: 100%; height: 100%; /* 화면 가득 채우기 */
+      overflow: hidden; /* 스크롤바 숨기기 */
+      font-family: 'Arial', sans-serif;
+      color: white;
+      text-align: center;
+      position: relative;
     }
+
+    /* 갤럭시 우주 배경 그라데이션 */
     body {
-      margin: 0;
-      min-height: 100vh;
-      background: linear-gradient(
-        270deg,
-        #ff0000, #ffa500, #ffff00, #008000, #0000ff, #4b0082, #ee82ee, #ff0000
-      );
-      background-size: 1400% 1400%;
-      animation: rainbow 20s ease infinite;
+      background: radial-gradient(circle at center, #1a1a2e, #0f0a1c 70%, #05050f);
       display: flex;
       justify-content: center;
       align-items: center;
       flex-direction: column;
-      color: white;
-      font-family: 'Arial', sans-serif;
-      text-align: center;
-      padding: 20px;
       box-sizing: border-box;
-      position: relative;
-      overflow: hidden;
-      height: 100vh;
+      padding: 20px;
+    }
+
+    /* 파티클 캔버스 스타일 */
+    canvas#particle-canvas {
+      position: fixed; /* 화면에 고정 */
+      top: 0; left: 0;
+      width: 100vw; height: 100vh; /* 뷰포트 전체 크기 */
+      z-index: 0; /* 모든 콘텐츠보다 뒤에 위치 */
+      pointer-events: none; /* 마우스 이벤트 무시 */
+      display: block;
     }
 
     h1 {
       font-size: 2.5rem;
       text-shadow: 2px 2px 5px rgba(0,0,0,0.7);
       margin-bottom: 40px;
+      position: relative; /* 파티클 위로 올라오게 */
       z-index: 10;
     }
 
@@ -52,6 +56,7 @@
       height: 400px;
       cursor: pointer;
       margin: 0 auto;
+      z-index: 5; /* 파티클 위, 텍스트 아래에 위치 */
     }
 
     /* 파츠 이미지 기본 스타일 */
@@ -65,7 +70,7 @@
       pointer-events: none;
     }
 
-    /* 머리 좌우 흔들기 */
+    /* 머리 좌우 흔들기 애니메이션 */
     @keyframes headShake {
       0%, 100% { transform: translateX(0); }
       25% { transform: translateX(5px); }
@@ -73,7 +78,7 @@
       75% { transform: translateX(5px); }
     }
 
-    /* 바지 좌우 움직임 (머리와 반대방향) */
+    /* 바지 좌우 움직임 (머리와 반대방향) 애니메이션 */
     @keyframes pantsShake {
       0%, 100% { transform: translateX(0); }
       25% { transform: translateX(-5px); }
@@ -81,10 +86,10 @@
       75% { transform: translateX(-5px); }
     }
 
-    /* 수정: 머리 z-index 최하단 */
+    /* 애니메이션 및 Z-Index 적용 */
     .head {
       animation: headShake 1.5s ease-in-out infinite;
-      z-index: 1;
+      z-index: 1; /* 맨 아래 */
     }
 
     .pants {
@@ -97,7 +102,7 @@
     }
 
     .hood {
-      z-index: 4;
+      z-index: 4; /* 맨 위 */
     }
   </style>
 </head>
@@ -111,5 +116,81 @@
     <img src="후드.png" alt="후드" class="hood" />
   </div>
 
+  <!-- 파티클을 그릴 캔버스 요소 -->
+  <canvas id="particle-canvas"></canvas>
+
+  <!-- 파티클 애니메이션 자바스크립트 -->
+  <script>
+    const canvas = document.getElementById('particle-canvas');
+    const ctx = canvas.getContext('2d');
+
+    let w, h;
+    let particles = [];
+    const particleCount = 100; // 파티클(별) 개수 조절
+
+    // 캔버스 크기를 화면에 맞게 조절
+    function resize() {
+      w = window.innerWidth;
+      h = window.innerHeight;
+      canvas.width = w;
+      canvas.height = h;
+    }
+    window.addEventListener('resize', resize);
+    resize();
+
+    // 개별 파티클 생성자
+    function Particle() {
+      this.x = Math.random() * w; // 초기 X 위치 (랜덤)
+      this.y = Math.random() * h; // 초기 Y 위치 (랜덤)
+      this.radius = Math.random() * 1.5 + 0.5; // 파티클 크기 (랜덤)
+      this.speedX = (Math.random() - 0.5) * 0.3; // X축 이동 속도 (느리게)
+      this.speedY = (Math.random() - 0.5) * 0.3; // Y축 이동 속도 (느리게)
+      this.alpha = Math.random(); // 불투명도 (깜빡임 효과에 사용)
+      this.alphaChange = 0.01 + Math.random() * 0.01; // 불투명도 변화 속도
+    }
+
+    // 파티클 업데이트 (움직임, 깜빡임)
+    Particle.prototype.update = function() {
+      this.x += this.speedX;
+      this.y += this.speedY;
+
+      // 화면 밖으로 나가면 반대편에서 다시 나타남
+      if(this.x > w) this.x = 0; else if(this.x < 0) this.x = w;
+      if(this.y > h) this.y = 0; else if(this.y < 0) this.y = h;
+
+      // 깜빡임 효과 (불투명도 조절)
+      this.alpha += this.alphaChange;
+      if(this.alpha <= 0.1 || this.alpha >= 1) this.alphaChange *= -1;
+    }
+
+    // 파티클 그리기
+    Particle.prototype.draw = function() {
+      ctx.beginPath();
+      ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+      ctx.fillStyle = `rgba(255, 255, 255, ${this.alpha})`; /* 하얀색 별 */
+      ctx.fill();
+    }
+
+    // 모든 파티클 초기화
+    function initParticles() {
+      particles = [];
+      for(let i = 0; i < particleCount; i++) {
+        particles.push(new Particle());
+      }
+    }
+
+    // 애니메이션 루프 (반복적으로 파티클 업데이트 및 그리기)
+    function animateParticles() {
+      ctx.clearRect(0, 0, w, h); // 캔버스 지우기
+      particles.forEach(p => {
+        p.update(); // 위치 업데이트
+        p.draw();   // 다시 그리기
+      });
+      requestAnimationFrame(animateParticles); // 다음 프레임 요청
+    }
+
+    initParticles(); // 파티클 초기화
+    animateParticles(); // 애니메이션 시작
+  </script>
 </body>
 </html>
