@@ -2,83 +2,21 @@
 <html lang="ko">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>꺄룰랭 - 심학산의 움직이는 갤러리! 🌈💃</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>꺄룰랭 - 엉덩이 춤추는 캐릭터</title>
   <style>
-    /* 🌈 무지개 배경 애니메이션 키프레임 */
+    /* 무지개 배경 애니메이션 */
     @keyframes rainbow {
-      0% {
-        background-position: 0% 50%;
-      }
-      50% {
-        background-position: 100% 50%;
-      }
-      100% {
-        background-position: 0% 50%;
-      }
+      0% {background-position: 0% 50%;}
+      50% {background-position: 100% 50%;}
+      100% {background-position: 0% 50%;}
     }
-
-    /* 🖼️ 이미지 움직이는 애니메이션 키프레임 (반시계 방향) */
-    @keyframes image-move-1 {
-      0%, 100% {
-        top: 10%;
-        left: 10%;
-        transform: rotate(0deg);
-      }
-      25% {
-        top: 10%;
-        left: 80%;
-        transform: rotate(-90deg); /* 반시계 방향 회전 */
-      }
-      50% {
-        top: 80%;
-        left: 80%;
-        transform: rotate(-180deg);
-      }
-      75% {
-        top: 80%;
-        left: 10%;
-        transform: rotate(-270deg);
-      }
-    }
-
-    @keyframes image-move-2 {
-      0%, 100% {
-        top: 80%;
-        left: 80%;
-        transform: rotate(0deg);
-      }
-      25% {
-        top: 80%;
-        left: 10%;
-        transform: rotate(-90deg); /* 반시계 방향 회전 */
-      }
-      50% {
-        top: 10%;
-        left: 10%;
-        transform: rotate(-180deg);
-      }
-      75% {
-        top: 10%;
-        left: 80%;
-        transform: rotate(-270deg);
-      }
-    }
-
-    /* 🎨 전체 페이지 기본 스타일 */
     body {
       margin: 0;
       min-height: 100vh;
       background: linear-gradient(
         270deg,
-        #ff0000, /* Red */
-        #ffa500, /* Orange */
-        #ffff00, /* Yellow */
-        #008000, /* Green */
-        #0000ff, /* Blue */
-        #4b0082, /* Indigo */
-        #ee82ee, /* Violet */
-        #ff0000
+        #ff0000, #ffa500, #ffff00, #008000, #0000ff, #4b0082, #ee82ee, #ff0000
       );
       background-size: 1400% 1400%;
       animation: rainbow 20s ease infinite;
@@ -91,193 +29,67 @@
       text-align: center;
       padding: 20px;
       box-sizing: border-box;
-      position: relative; /* 자식 이미지들의 absolute positioning 기준 */
-      overflow: hidden; /* 이미지가 밖으로 나갈 경우 잘라줌 */
-    }
-
-    /* 🖼️ 움직이는 개별 이미지 스타일 */
-    .moving-image {
-      position: absolute; /* 절대 위치 지정 */
-      width: 150px; /* 이미지 너비 고정 (필요에 따라 조절) */
-      height: auto; /* 비율 유지 */
-      border: 5px solid rgba(255, 255, 255, 0.7);
-      border-radius: 10px;
-      z-index: 5; /* 햄버거 메뉴보다 낮고, 다른 콘텐츠보다 위에 */
-      filter: drop-shadow(0 0 10px rgba(0,0,0,0.8)); /* 그림자 효과 */
-    }
-
-    /* 이미지 1 전용 애니메이션 */
-    .moving-image.image-1 {
-      animation: image-move-1 30s linear infinite; /* 30초 동안 선형(일정속도) 무한 반복 */
-    }
-    /* 이미지 2 전용 애니메이션 */
-    .moving-image.image-2 {
-      animation: image-move-2 30s linear infinite; /* 이미지 1과 반대 방향 시작점 */
+      position: relative;
+      overflow: hidden;
+      height: 100vh;
     }
 
     h1 {
       font-size: 2.5rem;
       text-shadow: 2px 2px 5px rgba(0,0,0,0.7);
-      position: relative; /* 다른 요소보다 위에 보이게 */
+      margin-bottom: 40px;
       z-index: 10;
-      margin-top: 100px; /* 움직이는 이미지와 겹치지 않도록 조정 */
     }
 
-    /* 🍔 햄버거 메뉴 아이콘 스타일 */
-    .hamburger-menu {
-      width: 30px;
-      height: 20px;
-      position: fixed; /* 화면에 고정 */
-      top: 25px;
-      left: 25px;
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
+    /* 캐릭터 컨테이너: 파츠들을 겹치기 위한 부모 */
+    .character-container {
+      position: relative;
+      width: 300px;  /* 캐릭터 크기 조절 */
+      height: 400px;
       cursor: pointer;
-      z-index: 1000; /* 가장 위에 보이도록 z-index 높임 */
-      transition: all 0.3s ease-in-out;
+      animation: bootyShake 1.5s ease-in-out infinite;
+      /* 중앙에 배치 */
+      margin: 0 auto;
     }
 
-    .hamburger-menu .bar {
-      width: 100%;
-      height: 3px;
-      background-color: white;
-      border-radius: 3px;
-      transition: all 0.3s ease-in-out;
-    }
-
-    /* 햄버거 메뉴가 활성화되었을 때 (X자 모양으로 변형) */
-    .hamburger-menu.active .bar:nth-child(1) {
-      transform: translateY(8.5px) rotate(45deg);
-    }
-    .hamburger-menu.active .bar:nth-child(2) {
-      opacity: 0; /* 가운데 바 사라짐 */
-    }
-    .hamburger-menu.active .bar:nth-child(3) {
-      transform: translateY(-8.5px) rotate(-45deg);
-    }
-
-    /* 侧边导航菜单样式 */
-    .sidebar-nav {
-      position: fixed;
+    /* 모든 파츠는 절대 위치로 겹치기 */
+    .character-container img {
+      position: absolute;
       top: 0;
       left: 0;
-      width: 250px; /* 메뉴 너비 */
-      height: 100%;
-      background-color: rgba(0, 0, 0, 0.9); /* 메뉴 배경색 */
-      transform: translateX(-100%); /* 기본적으로 화면 밖으로 숨김 */
-      transition: transform 0.3s ease-in-out; /* 부드러운 애니메이션 */
-      z-index: 999; /* 햄버거 아이콘 바로 뒤에 보이도록 */
-      padding-top: 80px; /* 상단 여백 (햄버거 버튼과 겹치지 않게) */
-      box-sizing: border-box;
-      display: flex;
-      flex-direction: column;
-      align-items: flex-start;
-      justify-content: flex-start;
-    }
-
-    /* 메뉴 활성화 시 */
-    .sidebar-nav.active {
-      transform: translateX(0); /* 화면 안으로 들어오도록 함 */
-    }
-
-    .sidebar-nav ul {
-      list-style: none; /* 리스트 스타일 제거 */
-      padding: 0;
-      margin: 0;
       width: 100%;
+      height: auto;
+      user-select: none;
+      pointer-events: none; /* 클릭 등 방해 안 되게 */
     }
 
-    .sidebar-nav ul li {
-      width: 100%;
-    }
-
-    .sidebar-nav ul li a {
-      display: block;
-      padding: 15px 25px;
-      color: white;
-      text-decoration: none; /* 밑줄 제거 */
-      font-size: 1.2rem;
-      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-      transition: background-color 0.2s ease;
-      text-align: left;
-    }
-
-    .sidebar-nav ul li a:hover {
-      background-color: rgba(255, 255, 255, 0.1); /* 호버 시 배경색 변경 */
-    }
-    /* 방문자수 스타일 추가 */
-    .visitor-count-item a {
-      color: lightgreen; /* 방문자수는 다른 색으로 강조 */
-      font-weight: bold;
+    /* 엉덩이 흔드는 애니메이션 */
+    @keyframes bootyShake {
+      0%, 100% {
+        transform: translateX(0) rotate(0deg);
+      }
+      25% {
+        transform: translateX(-10px) rotate(-5deg);
+      }
+      50% {
+        transform: translateX(10px) rotate(5deg);
+      }
+      75% {
+        transform: translateX(-10px) rotate(-5deg);
+      }
     }
   </style>
 </head>
 <body>
-  <!-- 🍔 햄버거 메뉴 아이콘 -->
-  <div class="hamburger-menu">
-    <div class="bar"></div>
-    <div class="bar"></div>
-    <div class="bar"></div>
+  <h1>✨ 엉덩이 춤 추는 캐릭터 ✨</h1>
+
+  <div class="character-container">
+    <img src="hood.png" alt="후드" class="hood" />
+    <img src="clothes.png" alt="옷" class="clothes" />
+    <img src="head.png" alt="머리" class="head" />
+    <img src="pants.png" alt="바지" class="pants" />
   </div>
 
-  <!-- 🧭 사이드바 내비게이션 메뉴 -->
-  <nav class="sidebar-nav">
-    <ul>
-      <li><a href="#">🏡 홈으로</a></li>
-      <li><a href="#">🖼️ 나의 갤러리</a></li>
-      <li><a href="#">📝 내 작업들</a></li>
-      <li class="visitor-count-item"><a>👀 방문 횟수: <span id="visitorCountDisplay">0</span></a></li> <!-- 방문 횟수 추가 -->
-      <li><a href="#">✉️ 연락하기</a></li>
-    </ul>
-  </nav>
-
-  <h1>✨꺄룰랭✨</h1>
-
-  <!-- 🖼️ 신나게 움직이는 이미지들! -->
-  <img src="1.png" alt="내 첫 번째 신나는 이미지" class="moving-image image-1" />
-  <img src="2.png" alt="내 두 번째 신나는 이미지" class="moving-image image-2" />
-
-  <!-- 💻 자바스크립트 코드 (HTML 파일 안에 직접 넣기) -->
-  <script>
-    // 햄버거 메뉴 아이콘과 사이드바 메뉴 요소를 가져옴
-    const hamburger = document.querySelector('.hamburger-menu');
-    const nav = document.querySelector('.sidebar-nav');
-
-    // 방문 횟수 표시 요소를 가져옴
-    const visitorCountDisplay = document.getElementById('visitorCountDisplay');
-    // localStorage에서 저장된 방문 횟수를 가져오거나 없으면 0으로 초기화
-    let visitorCount = localStorage.getItem('hamburgerClickCount') ? parseInt(localStorage.getItem('hamburgerClickCount')) : 0;
-
-    // 방문 횟수 디스플레이를 업데이트하는 함수
-    function updateVisitorCountDisplay() {
-      visitorCountDisplay.textContent = visitorCount;
-    }
-
-    // 페이지 로드 시 초기 방문 횟수 표시
-    updateVisitorCountDisplay();
-
-    // 햄버거 메뉴 아이콘을 클릭했을 때 이벤트 리스너 추가
-    hamburger.addEventListener('click', () => {
-      // 햄버거 아이콘과 내비게이션 메뉴에 'active' 클래스를 토글 (추가/제거)
-      hamburger.classList.toggle('active'); // 아이콘 모양 변경
-      nav.classList.toggle('active');       // 메뉴 열림/닫힘
-
-      // **여기서 방문 횟수를 증가시키고 localStorage에 저장!**
-      visitorCount++;
-      localStorage.setItem('hamburgerClickCount', visitorCount);
-      updateVisitorCountDisplay(); // 화면에도 바로 업데이트
-    });
-
-    // 메뉴 바깥쪽을 클릭했을 때 메뉴 닫기 (선택 사항)
-    document.addEventListener('click', (event) => {
-      if (!hamburger.contains(event.target) && !nav.contains(event.target)) {
-        if (hamburger.classList.contains('active')) {
-          hamburger.classList.remove('active');
-          nav.classList.remove('active');
-        }
-      }
-    });
-  </script>
+  <!-- 필요하면 나중에 햄버거 메뉴, JS 추가 가능 -->
 </body>
 </html>
