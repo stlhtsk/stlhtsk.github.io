@@ -81,24 +81,23 @@
       75% { transform: translateX(-5px); }
     }
 
-    /* 머리 애니메이션 적용 */
+    /* 수정: 머리 z-index 최하단 */
     .head {
       animation: headShake 1.5s ease-in-out infinite;
-      z-index: 3;
-    }
-
-    /* 바지 애니메이션 적용 */
-    .pants {
-      animation: pantsShake 1.5s ease-in-out infinite;
       z-index: 1;
     }
 
-    /* 후드와 옷은 고정, 겹침 확인을 위한 z-index 조절 */
+    .pants {
+      animation: pantsShake 1.5s ease-in-out infinite;
+      z-index: 2;
+    }
+
+    .clothes {
+      z-index: 3;
+    }
+
     .hood {
       z-index: 4;
-    }
-    .clothes {
-      z-index: 2;
     }
   </style>
 </head>
@@ -106,10 +105,10 @@
   <h1>✨ 엉덩이 춤 추는 캐릭터 ✨</h1>
 
   <div class="character-container">
-    <img src="후드.png" alt="후드" class="hood" />
-    <img src="옷.png" alt="옷" class="clothes" />
-    <img src="바지.png" alt="바지" class="pants" />
     <img src="머리.png" alt="머리" class="head" />
+    <img src="바지.png" alt="바지" class="pants" />
+    <img src="옷.png" alt="옷" class="clothes" />
+    <img src="후드.png" alt="후드" class="hood" />
   </div>
 
 </body>
