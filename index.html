@@ -3,12 +3,19 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>꺄룰랭 - 엉덩이 춤추는 캐릭터 (화려한 갤럭시)</title>
+  <title>꺄룰랭 - 엉덩이 춤추는 캐릭터 (초절정 화려함)</title>
 
   <!-- 파비콘 추가 -->
   <link rel="icon" type="image/png" href="파비콘.png" />
 
   <style>
+    /* 1. 배경 그라데이션 애니메이션 키프레임 */
+    @keyframes vibrant-gradient-move {
+        0% { background-position: 0% 50%; }
+        50% { background-position: 100% 50%; }
+        100% { background-position: 0% 50%; }
+    }
+
     /* 기본 HTML, BODY 스타일 */
     html, body {
       margin: 0; padding: 0;
@@ -17,12 +24,25 @@
       font-family: 'Arial', sans-serif;
       color: white;
       text-align: center;
-      position: relative;
+      position: relative; /* 자식 요소들을 위한 위치 기준점 */
     }
 
-    /* 🔥 화려한 갤럭시 배경 그라데이션 */
+    /* 2. 더 화려하고 움직이는 배경 그라데이션 적용 */
     body {
-      background: radial-gradient(circle at top left, #a13dff 0%, #5d1baf 30%, #2a0a5e 60%, #000000 100%);
+      /* 여러 색상으로 구성된 그라데이션 */
+      background: linear-gradient(
+        270deg, /* 그라데이션 방향 */
+        #ff007f, /* 진한 핑크 */
+        #ff8c00, /* 다크 오렌지 */
+        #ffd700, /* 골드 */
+        #32cd32, /* 라임 그린 */
+        #1e90ff, /* 도저 블루 */
+        #9370db, /* 미디엄 퍼플 */
+        #ff007f /* 다시 핑크로 마무리하여 부드러운 연결 */
+      );
+      background-size: 400% 400%; /* 그라데이션 사이즈를 키워 움직일 여유 공간 확보 */
+      animation: vibrant-gradient-move 15s ease infinite; /* 15초 동안 애니메이션 무한 반복 */
+
       display: flex;
       justify-content: center;
       align-items: center;
@@ -104,6 +124,24 @@
     .hood {
       z-index: 4; /* 맨 위 */
     }
+
+    /* 3. 오른쪽 위에 지구본 스타일 */
+    .earth-icon {
+      position: fixed; /* 화면에 고정 */
+      top: 20px;
+      right: 20px;
+      width: 80px; /* 지구본 크기 조절 */
+      height: auto;
+      z-index: 100; /* 모든 UI 요소보다 위에 오도록 */
+      opacity: 0.8; /* 살짝 투명하게 */
+      animation: earthRotate 20s linear infinite; /* 지구본 자전 애니메이션 */
+    }
+
+    /* 지구본 자전 애니메이션 */
+    @keyframes earthRotate {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
   </style>
 </head>
 <body>
@@ -119,15 +157,28 @@
   <!-- 파티클을 그릴 캔버스 요소 -->
   <canvas id="particle-canvas"></canvas>
 
+  <!-- 4. 지구본 이미지 추가 -->
+  <!-- ⚠️ "지구본.png" 파일이 루트에 있어야 합니다! -->
+  <img src="지구본.png" alt="우주 지구본" class="earth-icon" />
+
   <!-- 파티클 애니메이션 자바스크립트 -->
   <script>
     const canvas = document.getElementById('particle-canvas');
     const ctx = canvas.getContext('2d');
 
     let w, h;
-    // 파티클(별) 개수 조절 - 쏟아지는 느낌을 위해 개수를 늘렸어
-    const particleCount = 200; 
+    const particleCount = 200; // 파티클(별) 개수 조절
     let particles = [];
+    
+    // 5. 다양한 파티클 색상 배열 추가
+    const particleColors = [
+      'rgba(255, 165, 0,',   // 주황
+      'rgba(255, 255, 0,',   // 노랑
+      'rgba(0, 191, 255,',   // 진한 파랑 (Deep Sky Blue)
+      'rgba(255, 69, 0,',    // 오렌지 레드
+      'rgba(147, 112, 219,', // 미디엄 퍼플
+      'rgba(255, 255, 255,'  // 하양
+    ];
 
     // 캔버스 크기를 화면에 맞게 조절
     function resize() {
@@ -148,6 +199,8 @@
       this.speedY = Math.random() * 2 + 1; // 🚀 Y축 이동 속도 (아래로 쏟아지는 속도)
       this.alpha = Math.random(); // 불투명도 (깜빡임 효과에 사용)
       this.alphaChange = 0.01 + Math.random() * 0.01; // 불투명도 변화 속도
+      // 6. 파티클 색상 랜덤 지정
+      this.color = particleColors[Math.floor(Math.random() * particleColors.length)];
     }
 
     // 파티클 업데이트 (움직임, 깜빡임)
@@ -173,7 +226,8 @@
     Particle.prototype.draw = function() {
       ctx.beginPath();
       ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
-      ctx.fillStyle = `rgba(255, 255, 255, ${this.alpha})`; /* 하얀색 별 */
+      // 7. 파티클 색상 적용
+      ctx.fillStyle = `${this.color} ${this.alpha})`; 
       ctx.fill();
     }
 
