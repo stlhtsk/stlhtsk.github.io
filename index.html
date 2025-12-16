@@ -3,16 +3,16 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>꺄룰랭 - 엉덩이 춤추는 캐릭터 (갤럭시)</title>
+  <title>꺄룰랭 - 엉덩이 춤추는 캐릭터 (화려한 갤럭시)</title>
 
   <!-- 파비콘 추가 -->
   <link rel="icon" type="image/png" href="파비콘.png" />
 
   <style>
-    /* 기본 HTML, BODY 스타일 (무지개 배경 제거) */
+    /* 기본 HTML, BODY 스타일 */
     html, body {
       margin: 0; padding: 0;
-      width: 100%; height: 100%; /* 화면 가득 채우기 */
+      width: 100%; height: 100%;
       overflow: hidden; /* 스크롤바 숨기기 */
       font-family: 'Arial', sans-serif;
       color: white;
@@ -20,9 +20,9 @@
       position: relative;
     }
 
-    /* 갤럭시 우주 배경 그라데이션 */
+    /* 🔥 화려한 갤럭시 배경 그라데이션 */
     body {
-      background: radial-gradient(circle at center, #1a1a2e, #0f0a1c 70%, #05050f);
+      background: radial-gradient(circle at top left, #a13dff 0%, #5d1baf 30%, #2a0a5e 60%, #000000 100%);
       display: flex;
       justify-content: center;
       align-items: center;
@@ -125,8 +125,9 @@
     const ctx = canvas.getContext('2d');
 
     let w, h;
+    // 파티클(별) 개수 조절 - 쏟아지는 느낌을 위해 개수를 늘렸어
+    const particleCount = 200; 
     let particles = [];
-    const particleCount = 100; // 파티클(별) 개수 조절
 
     // 캔버스 크기를 화면에 맞게 조절
     function resize() {
@@ -143,8 +144,8 @@
       this.x = Math.random() * w; // 초기 X 위치 (랜덤)
       this.y = Math.random() * h; // 초기 Y 위치 (랜덤)
       this.radius = Math.random() * 1.5 + 0.5; // 파티클 크기 (랜덤)
-      this.speedX = (Math.random() - 0.5) * 0.3; // X축 이동 속도 (느리게)
-      this.speedY = (Math.random() - 0.5) * 0.3; // Y축 이동 속도 (느리게)
+      this.speedX = (Math.random() - 0.5) * 0.1; // X축 이동 속도 (미세한 좌우 흔들림)
+      this.speedY = Math.random() * 2 + 1; // 🚀 Y축 이동 속도 (아래로 쏟아지는 속도)
       this.alpha = Math.random(); // 불투명도 (깜빡임 효과에 사용)
       this.alphaChange = 0.01 + Math.random() * 0.01; // 불투명도 변화 속도
     }
@@ -152,11 +153,16 @@
     // 파티클 업데이트 (움직임, 깜빡임)
     Particle.prototype.update = function() {
       this.x += this.speedX;
-      this.y += this.speedY;
+      this.y += this.speedY; // 쏟아지는 효과를 위해 speedY만 주로 사용
 
-      // 화면 밖으로 나가면 반대편에서 다시 나타남
+      // 화면 밖으로 나가면 (아래로 쏟아지면) 위에서 다시 나타남
+      if(this.y > h) {
+        this.y = 0; // 최상단으로 이동
+        this.x = Math.random() * w; // x 위치도 다시 랜덤으로
+      }
+      // x축은 계속 캔버스 내에서 움직이도록 (좌우 미세 이동)
       if(this.x > w) this.x = 0; else if(this.x < 0) this.x = w;
-      if(this.y > h) this.y = 0; else if(this.y < 0) this.y = h;
+
 
       // 깜빡임 효과 (불투명도 조절)
       this.alpha += this.alphaChange;
