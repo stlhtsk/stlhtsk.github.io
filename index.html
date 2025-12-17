@@ -28,7 +28,7 @@
       display: flex;
       justify-content: center; /* 가로 중앙 정렬 */
       align-items: center; /* 세로 중앙 정렬 */
-      flex-direction: column; /* 아이템들을 세로로 배치 */
+      /* flex-direction: column; 제거. 기본 row로 둬서 중앙 정렬만 집중 */
       padding: 0; /* 기존 20px 패딩 제거. 스크롤 및 중앙 정렬에 영향 줄 수 있어 제거. */
     }
 
@@ -42,13 +42,18 @@
       display: block;
     }
 
-    /* 크로마키 비디오/캔버스 컨테이너 - 여기만 수정되었어! */
+    /* 크로마키 비디오/캔버스 컨테이너 - 이 부분만 수정되었어! */
     .video-chromakey-container {
       position: relative;
-      width: min(672px, 90vw); /* 최대 672px, 또는 뷰포트 너비의 90% 중 더 작은 값 */
-      height: auto;             /* 너비에 맞춰 높이 자동 조절 */
-      aspect-ratio: 672 / 864;  /* 672x864 고정 비율 유지 */
-      max-height: min(864px, 90vh); /* 최대 864px, 또는 뷰포트 높이의 90% 중 더 작은 값 */
+      width: min(672px, 100vw); /* 화면 가로폭이 672px보다 작으면 100vw만큼 줄어듬 (최대 672px) */
+      height: min(864px, 100vh); /* 화면 세로폭이 864px보다 작으면 100vh만큼 줄어듬 (최대 864px) */
+      aspect-ratio: 672 / 864; /* 672x864 고정 비율 유지 */
+      
+      /* `object-fit: contain`과 유사하게 동작하도록 하는 추가 속성 */
+      max-width: 100%; /* 부모(body)의 최대 가로를 넘어가지 않게 */
+      max-height: 100%; /* 부모(body)의 최대 세로를 넘어가지 않게 */
+      margin: auto; /* flex 중앙 정렬에 더해, 추가 여백 관리 */
+
       overflow: hidden;         /* 컨테이너 내부 스크롤 방지 */
       z-index: 10;              /* 배경보다 앞에 위치 */
       box-shadow: 0 0 30px rgba(0, 0, 0, 0.2); /* 입체감 효과 */
@@ -56,8 +61,6 @@
       display: flex;            /* 내부 캔버스를 컨테이너 중앙에 배치 */
       justify-content: center;
       align-items: center;
-      /* 이 flex-shrink: 0을 추가해서 컨테이너가 축소될 때 콘텐츠 크기를 유지하도록 도움 */
-      flex-shrink: 0;
     }
 
     /* 비디오 요소 자체는 화면에 보이지 않게 하고 캔버스에 그릴 것 */
@@ -152,8 +155,6 @@
     let isVideoPlaying = false;
 
     video.addEventListener('loadedmetadata', () => {
-      // 캔버스 크기는 고정된 672x864를 유지.
-      // 컨테이너 크기만 반응형으로 조정되도록 CSS로 처리
       chromakeyCanvas.width = 672;
       chromakeyCanvas.height = 864;
     });
