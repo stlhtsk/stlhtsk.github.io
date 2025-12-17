@@ -28,7 +28,8 @@
       align-items: center;
       flex-direction: column;
       box-sizing: border-box;
-      padding: 20px;
+      padding: 0; /* padding 20px -> 0으로 변경. 스크롤 방지 및 중앙 정렬을 위함. */
+      /* height: 100vh; 이전에 제안했던 body height는 다시 원래대로 돌려놓음. */
     }
 
     /* 파티클 캔버스 스타일 (기존 유지, z-index만 조정) */
@@ -44,8 +45,12 @@
     /* 크로마키 비디오/캔버스 컨테이너 */
     .video-chromakey-container {
       position: relative;
-      width: 672px; /* 너가 요청한 동영상 너비 고정 */
-      height: 864px; /* 너가 요청한 동영상 높이 고정 */
+      /* === 여기서부터 동영상 크기/비율/스크롤 관련 수정 === */
+      width: min(672px, 90vw); /* 최대 672px, 또는 뷰포트 너비의 90% 중 작은 값 */
+      height: auto;            /* 너비에 따라 높이가 자동으로 조절되게 함 */
+      aspect-ratio: 672 / 864; /* 672x864의 비율을 고정 */
+      max-height: min(864px, 90vh); /* 최대 864px, 또는 뷰포트 높이의 90% 중 작은 값 */
+      /* overflow: hidden은 이미 있었으므로 유지 */
       overflow: hidden; /* 혹시 모를 오버플로우 방지 */
       z-index: 10; /* 배경보다 앞에 위치 */
       box-shadow: 0 0 30px rgba(0, 0, 0, 0.2); /* 입체감 효과 */
@@ -78,18 +83,17 @@
   <!-- 크로마키 비디오/캔버스 컨테이너 -->
   <div class="video-chromakey-container">
     <!-- 초록색 배경의 미소년 동영상이 로드될 비디오 태그 -->
-    <video id="mi_sonyeon_video" src="미소년 동영상.mp4" preload="auto" loop muted autoplay></video>
+    <video id="mi_sonyeon_video" src="미소년 동영상.mp4" preload="auto" loop muted autoplay playsinline></video>
     <!-- 크로마키 처리된 미소년 동영상이 그려질 캔버스 -->
     <canvas id="chromakey_canvas"></canvas>
   </div>
 
   <script>
-    // ⭐️ 파티클 JavaScript
+    // ⭐️ 파티클 JavaScript (이전과 동일하게 유지)
     const particleCanvas = document.getElementById('particle-canvas');
     const particleCtx = particleCanvas.getContext('2d');
     let particles = [];
     const particleCount = 100;
-    // 파티클 색상은 너의 요청대로 흰색으로 유지
     const particleColor = 'rgba(255, 255, 255, 0.7)'; // 흰색 파티클
 
     function resizeParticleCanvas() {
@@ -141,22 +145,21 @@
     }
     animateParticles();
 
-    // ⭐️ 크로마키 JavaScript
+    // ⭐️ 크로마키 JavaScript (이전과 동일하게 유지)
     const video = document.getElementById('mi_sonyeon_video');
     const chromakeyCanvas = document.getElementById('chromakey_canvas');
     const chromakeyCtx = chromakeyCanvas.getContext('2d', { willReadFrequently: true });
 
-    let isVideoPlaying = false; // 비디오 재생 상태 추적
+    let isVideoPlaying = false;
 
     video.addEventListener('loadedmetadata', () => {
-      // 너가 요청한 동영상 사이즈(672*864)에 맞춰 캔버스 크기 고정
       chromakeyCanvas.width = 672;
       chromakeyCanvas.height = 864;
     });
 
     video.addEventListener('play', () => {
       isVideoPlaying = true;
-      drawFrame(); // 비디오 재생 시작 시 프레임 그리기 시작
+      drawFrame();
     });
 
     video.addEventListener('pause', () => {
@@ -166,59 +169,47 @@
       isVideoPlaying = false;
     });
 
-    // 초록색 배경 감지 및 제거 함수 (임계값 조정)
     function processFrame() {
       if (!isVideoPlaying || video.paused || video.ended) {
         return;
       }
 
-      // 캔버스에 비디오 프레임 그리기
       chromakeyCtx.drawImage(video, 0, 0, chromakeyCanvas.width, chromakeyCanvas.height);
 
-      // 픽셀 데이터 가져오기
       let frame = chromakeyCtx.getImageData(0, 0, chromakeyCanvas.width, chromakeyCanvas.height);
       let l = frame.data.length / 4;
 
-      // 크로마키 색상 (초록색 범위) 정의
-      // 이 값들을 조절해서 초록색 배경을 최대한 깔끔하게 없애도록 수정했어
-      const greenThreshold = 80; // 초록색의 최소 밝기 (이 값보다 어두우면 초록색이 아닐 확률 높음)
-      const colorDifference = 50; // 초록색과 다른 색상(R, B)의 차이. 이 차이보다 G가 크면 초록색으로 간주.
+      const greenThreshold = 80;
+      const colorDifference = 50;
 
       for (let i = 0; i < l; i++) {
         let r = frame.data[i * 4 + 0];
         let g = frame.data[i * 4 + 1];
         let b = frame.data[i * 4 + 2];
 
-        // G 값이 R, B 값보다 명확히 높고, G 값이 일정 임계값 이상이면 초록색으로 간주
-        // RGB 색상 조합에 따라 이 조건은 조정이 필요할 수 있어.
         if (g > greenThreshold && g > (r + b) / 2 + colorDifference && g > r + 10 && g > b + 10) {
-            frame.data[i * 4 + 3] = 0; // 알파값을 0으로, 완전히 투명하게 만듦
+            frame.data[i * 4 + 3] = 0;
         } else {
-            frame.data[i * 4 + 3] = 255; // 아니면 불투명
+            frame.data[i * 4 + 3] = 255;
         }
       }
       chromakeyCtx.putImageData(frame, 0, 0);
 
-      // 다음 프레임 그리기 요청
       if (isVideoPlaying) {
         requestAnimationFrame(processFrame);
       }
     }
 
-    // 비디오가 재생 준비되면 자동 재생 시작 시도
     video.addEventListener('canplay', () => {
       video.play().catch(error => {
         console.log("Autoplay was prevented:", error);
-        // 자동 재생 실패 시 (예: 브라우저 정책) 사용자에게 재생 버튼 표시 등
       });
     });
 
-    // 페이지 로드 후 처음 한 번 drawFrame 호출
     function drawFrame() {
         if (isVideoPlaying) {
             processFrame();
         } else {
-            // 비디오가 재생될 때까지 대기
             requestAnimationFrame(drawFrame);
         }
     }
