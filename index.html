@@ -1,25 +1,26 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <title>겨울 배경 미소년 애니메이션</title>
 
   <!-- 파비콘 유지 -->
-  <link rel="icon" type="image/png" href="파비콘.png" />
-
+  <link rel="icon" type="image/png" href="파비콘.png"/>
+  
   <style>
-    /* 기본 html, body 스타일 */
+    /* html, body 스타일 */
     html, body {
       margin: 0; padding: 0;
       width: 100%; height: 100%;
-      overflow: hidden; /* 스크롤 막기 */
+      overflow: hidden;
       font-family: 'Arial', sans-serif;
       color: #333;
       text-align: center;
       position: relative;
-      background-color: #e0f2f7; /* 연한 하늘색 배경 */
+      background-color: #e0f2f7;
       box-sizing: border-box;
+
       display: flex;
       justify-content: center;
       align-items: center;
@@ -35,29 +36,24 @@
       display: block;
     }
 
-    /* 비디오/크로마키 캔버스 컨테이너 */
+    /* 비디오 컨테이너 - 비율 유지와 크기 조절 */
     .video-chromakey-container {
       position: relative;
-      
-      /* 창 크기에 따라 크기 조절 */
-      width: 90vw;                  /* 뷰포트 너비의 90% */
-      max-width: 672px;             /* 최대 672px 고정 */
-      max-height: 90vh;             /* 최대 뷰포트 높이의 90% */
-      
-      /* 3:4 비율 강제 고정 */
+      width: 90vw;
+      max-width: 672px;
       aspect-ratio: 3 / 4;
-
+      max-height: 90vh;
       overflow: hidden;
       border-radius: 10px;
       box-shadow: 0 0 30px rgba(0,0,0,0.2);
-
+      
       display: flex;
       justify-content: center;
       align-items: center;
       flex-shrink: 0;
     }
 
-    /* 원본 비디오 숨기기 */
+    /* 원본 비디오 숨김 */
     #mi_sonyeon_video {
       display: none;
     }
@@ -74,19 +70,19 @@
     }
   </style>
 </head>
-<body>
 
+<body>
   <!-- 파티클 캔버스 -->
   <canvas id="particle-canvas"></canvas>
 
-  <!-- 동영상 및 크로마키 캔버스 컨테이너 -->
+  <!-- 비디오 / 크로마키 캔버스 컨테이너 -->
   <div class="video-chromakey-container">
     <video id="mi_sonyeon_video" src="미소년 동영상.mp4" preload="auto" loop muted autoplay playsinline></video>
     <canvas id="chromakey_canvas"></canvas>
   </div>
 
   <script>
-    // 파티클 효과 JS 그대로 유지
+    // 파티클 관련 JS
     const particleCanvas = document.getElementById('particle-canvas');
     const particleCtx = particleCanvas.getContext('2d');
     let particles = [];
@@ -97,9 +93,7 @@
       particleCanvas.width = window.innerWidth;
       particleCanvas.height = window.innerHeight;
       particles = [];
-      for(let i=0; i<particleCount; i++) {
-        particles.push(new Particle());
-      }
+      for(let i = 0; i < particleCount; i++) particles.push(new Particle());
     }
     window.addEventListener('resize', resizeParticleCanvas);
     resizeParticleCanvas();
@@ -111,11 +105,9 @@
       this.speedX = Math.random() * 0.5 - 0.25;
       this.speedY = Math.random() * 1.5 + 0.5;
     }
-
     Particle.prototype.update = function() {
       this.x += this.speedX;
       this.y += this.speedY;
-
       if(this.y > particleCanvas.height) {
         this.y = -this.size;
         this.x = Math.random() * particleCanvas.width;
@@ -124,17 +116,15 @@
         this.x = Math.random() * particleCanvas.width;
       }
     }
-
     Particle.prototype.draw = function() {
       particleCtx.fillStyle = particleColor;
       particleCtx.beginPath();
       particleCtx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
       particleCtx.fill();
     }
-
     function animateParticles() {
       particleCtx.clearRect(0, 0, particleCanvas.width, particleCanvas.height);
-      for(let i=0; i<particles.length; i++) {
+      for(let i = 0; i < particles.length; i++) {
         particles[i].update();
         particles[i].draw();
       }
@@ -158,45 +148,34 @@
       isPlaying = true;
       drawFrame();
     });
-
-    video.addEventListener('pause', () => {
-      isPlaying = false;
-    });
-
-    video.addEventListener('ended', () => {
-      isPlaying = false;
-    });
+    video.addEventListener('pause', () => { isPlaying = false; });
+    video.addEventListener('ended', () => { isPlaying = false; });
 
     function processFrame() {
       if(!isPlaying || video.paused || video.ended) return;
-
       ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-
       let frame = ctx.getImageData(0, 0, canvas.width, canvas.height);
       let length = frame.data.length / 4;
-
       const greenThreshold = 80;
       const colorDifference = 50;
 
-      for(let i=0; i<length; i++) {
-        const r = frame.data[i * 4 + 0];
-        const g = frame.data[i * 4 + 1];
-        const b = frame.data[i * 4 + 2];
+      for(let i = 0; i < length; i++) {
+        let r = frame.data[i*4 + 0];
+        let g = frame.data[i*4 + 1];
+        let b = frame.data[i*4 + 2];
 
-        if(g > greenThreshold && g > (r + b) / 2 + colorDifference && g > r + 10 && g > b + 10) {
-          frame.data[i * 4 + 3] = 0;
+        if (g > greenThreshold && g > (r + b)/2 + colorDifference && g > r +10 && g > b +10) {
+          frame.data[i*4 + 3] = 0;
         } else {
-          frame.data[i * 4 + 3] = 255;
+          frame.data[i*4 + 3] = 255;
         }
       }
-
       ctx.putImageData(frame, 0, 0);
-
       if(isPlaying) requestAnimationFrame(processFrame);
     }
 
     video.addEventListener('canplay', () => {
-      video.play().catch(err => { console.log('Autoplay 실패', err); });
+      video.play().catch(e => console.log("Autoplay 실패", e));
     });
 
     function drawFrame() {
@@ -206,7 +185,6 @@
         requestAnimationFrame(drawFrame);
       }
     }
-
   </script>
 </body>
 </html>
