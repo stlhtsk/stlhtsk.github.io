@@ -30,8 +30,6 @@
       box-sizing: border-box; /* 패딩, 보더 포함해서 크기 계산 */
     }
     
-    /* body { 위에 html,body 같이 적용해서 제거 } */
-
     /* 파티클 캔버스 스타일 (기존 유지, z-index만 조정) */
     canvas#particle-canvas {
       position: fixed; /* 화면에 고정 */
@@ -45,27 +43,25 @@
     /* 크로마키 비디오/캔버스 컨테이너 - 이 부분이 핵심 수정! */
     .video-chromakey-container {
       position: relative;
-      /* 화면에 꽉 차게 조절하되 비율을 유지 */
-      width: 100%;
-      height: 100%;
-      max-width: 672px; /* 원본 동영상 최대 너비 */
-      max-height: 864px; /* 원본 동영상 최대 높이 */
-      aspect-ratio: 672 / 864; /* **가로세로 비율 강제 고정** */
+      width: 100%; /* 부모 요소(body)의 가로 전체를 일단 사용 */
+      max-width: 672px; /* 원본 동영상의 최대 너비 이상으로는 커지지 않도록 제한 */
       
-      /* flexbox의 item으로서 남은 공간을 채우면서 비율 유지 */
+      /* padding-bottom 트릭으로 비율 고정: (height / width) * 100% */
+      /* (864 / 672) * 100% = 128.5714...% */
+      padding-bottom: calc(864 / 672 * 100%); 
+      height: 0; /* padding-bottom 트릭을 위해 height를 0으로 설정 */
+      
+      /* flex-shrink를 이용해 부모 공간에 맞춰 줄어들게 */
       flex-shrink: 1; /* 부모 공간이 부족하면 줄어들게 허용 */
-      flex-grow: 0;   /* 부모 공간이 남아도 늘어나지 않게 */
-      flex-basis: auto; /* 기본 크기는 콘텐츠에 맡김 */
+      flex-grow: 0;   /* 부모 공간이 남아도 더 커지지 않게 */
       
       overflow: hidden; /* 컨테이너 내부 스크롤 방지 */
       z-index: 10;      /* 배경보다 앞에 위치 */
       box-shadow: 0 0 30px rgba(0, 0, 0, 0.2); /* 입체감 효과 */
       border-radius: 10px; /* 부드러운 모서리 */
-      
-      /* 캔버스 자체를 컨테이너 중앙에 배치 (여기선 캔버스가 100% 꽉 채우므로 큰 의미는 없음) */
-      display: flex;            
-      justify-content: center;
-      align-items: center;
+
+      /* 컨테이너 자체가 flex item이므로, 자식 캔버스는 absolute로 채움 */
+      /* display: flex; justify-content: center; align-items: center; 는 더 이상 필요 없음 */
     }
 
     /* 비디오 요소 자체는 화면에 보이지 않게 하고 캔버스에 그릴 것 */
@@ -73,10 +69,13 @@
       display: none;
     }
 
-    /* 크로마키 결과가 그려질 캔버스 - 컨테이너 크기에 꽉 채우기 */
+    /* 크로마키 결과가 그려질 캔버스 - 컨테이너에 절대 위치시켜 꽉 채우기 */
     #chromakey_canvas {
-      width: 100%;
-      height: 100%;
+      position: absolute; /* 부모 컨테이너에 대해 절대 위치 */
+      top: 0;
+      left: 0;
+      width: 100%; /* 컨테이너 너비 100% */
+      height: 100%; /* 컨테이너 높이 100% */
       display: block;
       background-color: transparent; /* 초기 배경 투명 */
     }
@@ -160,7 +159,6 @@
     let isVideoPlaying = false;
 
     video.addEventListener('loadedmetadata', () => {
-      // 캔버스 크기는 고정된 672x864를 유지. CSS가 이 캔버스를 포함하는 컨테이너의 크기를 조절함.
       chromakeyCanvas.width = 672;
       chromakeyCanvas.height = 864;
     });
