@@ -10,7 +10,15 @@
 
   <style>
     /* ------------------------------------------- */
-    /* 전체 레이아웃 기본 스타일 (스크롤 방지, 중앙 정렬) */
+    /* 애니메이션 키프레임 - 배경 그라데이션이 은은하게 움직이도록 */
+    /* ------------------------------------------- */
+    @keyframes subtle-gradient-move {
+      0% { background-position: 0% 0%; }
+      100% { background-position: 100% 100%; }
+    }
+
+    /* ------------------------------------------- */
+    /* 전체 레이아웃 기본 스타일 (스크롤 방지, 중앙 정렬, 배경 그라데이션 애니메이션 추가) */
     /* ------------------------------------------- */
     html, body {
       margin: 0; padding: 0;
@@ -20,7 +28,17 @@
       color: #333;
       text-align: center;
       position: relative;
-      background-color: #e0f2f7; /* 연한 하늘색 배경 */
+      
+      /* 배경 그라데이션 애니메이션 추가 */
+      background: linear-gradient(
+        135deg, /* 대각선 방향 */
+        #000033, /* 어두운 남색 */
+        #e0f2f7, /* 연한 하늘색 */
+        #000033  /* 다시 어두운 남색으로 */
+      );
+      background-size: 200% 200%; /* 그라데이션 크기를 키워 움직일 여유 공간 확보 */
+      animation: subtle-gradient-move 20s ease infinite alternate; /* 20초 동안 애니메이션 무한 반복, 왔다갔다 (alternate) */
+      
       box-sizing: border-box;
 
       /* 동영상 컨테이너를 가로세로 중앙에 배치 */
@@ -42,46 +60,34 @@
     }
 
     /* ------------------------------------------- */
-    /* 크로마키 비디오/캔버스 컨테이너 (핵심 수정 부분) */
+    /* 크로마키 비디오/캔버스 컨테이너 (그림자 제거) */
     /* ------------------------------------------- */
     .video-chromakey-container {
       position: relative;
       
-      /* 동영상이 화면에 짤리지 않고 비율을 유지하며 가장 크게 들어가도록 */
-      max-width: 672px; /* 원본 너비 이상으로는 커지지 않음 */
-      max-height: 864px; /* 원본 높이 이상으로는 커지지 않음 */
-      width: auto;      /* max-width/max-height에 맞춰 자동 조절 */
-      height: auto;     /* max-width/max-height에 맞춰 자동 조절 */
+      width: 672px; 
+      height: 864px;
+      max-width: 672px; 
+      max-height: 864px;
+      aspect-ratio: 672 / 864; /* 3:4 비율 강제 고정 */
+
+      /* 그림자 제거 */
+      /* box-shadow: 0 0 30px rgba(0, 0, 0, 0.2); 이 부분을 아예 제거했어 */
       
-      /* 화면의 가로세로 비율과 동영상의 가로세로 비율을 비교해서 맞춰주는 핵심 부분 */
-      /* `min()` 함수를 사용하여 뷰포트 너비 또는 높이 중 더 제한적인 것을 기준으로 스케일링 */
-      /* 뷰포트가 가로로 넓으면 높이에 맞춰지고, 세로로 길면 너비에 맞춰지게 */
-      width: min(calc(100vh * (672 / 864)), 100vw);
-      height: min(calc(100vw * (864 / 672)), 100vh);
-
-      /* 최종적으로 비율을 3:4로 강제 고정 (위 계산이 우선되므로 주로 보험 역할) */
-      aspect-ratio: 672 / 864; 
-
-      /* 추가 스타일 */
-      overflow: hidden; /* 내부 요소가 넘치면 잘라냄 (하지만 이젠 넘치지 않아야 함) */
+      overflow: hidden; /* 내부 요소가 넘치면 잘라냄 */
       border-radius: 10px;
-      box-shadow: 0 0 30px rgba(0, 0, 0, 0.2);
       z-index: 10; /* 배경 파티클보다 위로 */
 
-      /* 캔버스를 컨테이너 내에서 중앙 정렬 (캔버스가 컨테이너를 꽉 채우므로 시각적 효과는 미미) */
       display: flex;
       justify-content: center;
       align-items: center;
     }
 
     /* ------------------------------------------- */
-    /* 미디어 쿼리: 창 너비가 672px 이하로 작아질 때 동영상이 반응형으로 줄어들도록 설정 */
-    /* (600px이하라고 요청했으나, 672px이하에서부터 줄어들어야 자연스러움) */
-    /* 이 미디어 쿼리는 컨테이너의 크기를 화면 크기에 따라 유동적으로 조절하며, 위 기본 스타일과 조화됨 */
+    /* 미디어 쿼리: 창 너비가 672px 이하로 작아지면 반응형으로 줄어들도록 */
     /* ------------------------------------------- */
     @media (max-width: 672px), (max-height: 864px) { 
         .video-chromakey-container {
-            /* 뷰포트 내부에 꽉 채우되 비율은 유지 (잘리지 않도록) */
             width: min(calc(100vh * (672 / 864)), 100vw);
             height: min(calc(100vw * (864 / 672)), 100vh);
             
@@ -89,7 +95,6 @@
             max-height: 100%; /* 부모 컨테이너(body)를 넘지 않음 */
         }
     }
-
 
     /* ------------------------------------------- */
     /* 비디오 요소와 크로마키 캔버스 스타일 */
@@ -190,7 +195,6 @@
     let isPlaying = false;
 
     video.addEventListener('loadedmetadata', () => {
-      // 캔버스 자체의 해상도는 원본 동영상 해상도로 고정
       canvas.width = 672;
       canvas.height = 864;
     });
@@ -205,28 +209,25 @@
     function processFrame() {
       if (!isPlaying || video.paused || video.ended) return;
 
-      // 캔버스에 비디오 프레임 그리기
       ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
 
-      // 픽셀 데이터 가져와 크로마키 처리
       let frame = ctx.getImageData(0, 0, canvas.width, canvas.height);
       let length = frame.data.length / 4;
-      const greenThreshold = 80; // 초록색 임계값
-      const colorDifference = 50; // 초록색과의 색상 차이
+      const greenThreshold = 80; 
+      const colorDifference = 50; 
 
       for (let i = 0; i < length; i++) {
         let r = frame.data[i * 4 + 0];
         let g = frame.data[i * 4 + 1];
         let b = frame.data[i * 4 + 2];
 
-        // 초록색으로 판단되면 투명하게 처리 (알파값 0)
         if (g > greenThreshold && g > (r + b) / 2 + colorDifference && g > r + 10 && g > b + 10) {
           frame.data[i * 4 + 3] = 0;
         } else {
-          frame.data[i * 4 + 3] = 255; // 아니면 불투명하게 유지
+          frame.data[i * 4 + 3] = 255; 
         }
       }
-      ctx.putImageData(frame, 0, 0); // 처리된 프레임을 다시 캔버스에 그림
+      ctx.putImageData(frame, 0, 0); 
 
       if (isPlaying) requestAnimationFrame(processFrame);
     }
