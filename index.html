@@ -9,7 +9,7 @@
   <link rel="icon" type="image/png" href="파비콘.png" />
 
   <style>
-    /* 기본 HTML, BODY 스타일 - 너가 요청한 겨울 분위기 그라데이션 배경으로 변경 */
+    /* 기본 HTML, BODY 스타일 */
     html, body {
       margin: 0; padding: 0;
       width: 100%; height: 100%;
@@ -21,8 +21,8 @@
     }
 
     body {
-      /* 흰색, 연한 하늘색 그라데이션 (겨울 분위기) */
-      background: linear-gradient(135deg, #e0f2f7 0%, #ffffff 50%, #e0f2f7 100%);
+      /* 너의 요청대로 연하늘색 배경 고정 */
+      background-color: #e0f2f7; /* 연한 하늘색 고정 */
       display: flex;
       justify-content: center;
       align-items: center;
@@ -44,14 +44,16 @@
     /* 크로마키 비디오/캔버스 컨테이너 */
     .video-chromakey-container {
       position: relative;
-      width: 640px; /* 원하는 비디오 너비 */
-      height: 360px; /* 원하는 비디오 높이 (16:9 비율 예시) */
-      max-width: 90vw; /* 화면 너비에 따라 반응형 조절 */
-      max-height: 90vh; /* 화면 높이에 따라 반응형 조절 */
+      width: 672px; /* 너가 요청한 동영상 너비 고정 */
+      height: 864px; /* 너가 요청한 동영상 높이 고정 */
       overflow: hidden; /* 혹시 모를 오버플로우 방지 */
       z-index: 10; /* 배경보다 앞에 위치 */
       box-shadow: 0 0 30px rgba(0, 0, 0, 0.2); /* 입체감 효과 */
       border-radius: 10px; /* 부드러운 모서리 */
+      /* 미소년 동영상이 가운데에 오도록 설정 */
+      display: flex;
+      justify-content: center;
+      align-items: center;
     }
 
     /* 비디오 요소 자체는 화면에 보이지 않게 하고 캔버스에 그릴 것 */
@@ -82,11 +84,12 @@
   </div>
 
   <script>
-    // ⭐️ 파티클 JavaScript (새로 추가)
+    // ⭐️ 파티클 JavaScript
     const particleCanvas = document.getElementById('particle-canvas');
     const particleCtx = particleCanvas.getContext('2d');
     let particles = [];
     const particleCount = 100;
+    // 파티클 색상은 너의 요청대로 흰색으로 유지
     const particleColor = 'rgba(255, 255, 255, 0.7)'; // 흰색 파티클
 
     function resizeParticleCanvas() {
@@ -138,21 +141,17 @@
     }
     animateParticles();
 
-    // ⭐️ 크로마키 JavaScript (새로 추가)
+    // ⭐️ 크로마키 JavaScript
     const video = document.getElementById('mi_sonyeon_video');
     const chromakeyCanvas = document.getElementById('chromakey_canvas');
-    const chromakeyCtx = chromakeyCanvas.getContext('2d', { willReadFrequently: true }); // 성능 최적화
+    const chromakeyCtx = chromakeyCanvas.getContext('2d', { willReadFrequently: true });
 
     let isVideoPlaying = false; // 비디오 재생 상태 추적
 
     video.addEventListener('loadedmetadata', () => {
-      // 비디오 메타데이터 로드 후 캔버스 크기 설정
-      chromakeyCanvas.width = video.videoWidth;
-      chromakeyCanvas.height = video.videoHeight;
-      // 비디오가 컨테이너에 맞춰지도록 스타일 업데이트 (이 부분은 CSS로 처리될 수 있음)
-      // video-chromakey-container의 width/height와 같도록 설정
-      document.querySelector('.video-chromakey-container').style.width = `${video.videoWidth}px`;
-      document.querySelector('.video-chromakey-container').style.height = `${video.videoHeight}px`;
+      // 너가 요청한 동영상 사이즈(672*864)에 맞춰 캔버스 크기 고정
+      chromakeyCanvas.width = 672;
+      chromakeyCanvas.height = 864;
     });
 
     video.addEventListener('play', () => {
@@ -167,7 +166,7 @@
       isVideoPlaying = false;
     });
 
-    // 초록색 배경 감지 및 제거 함수 (임계값 조정 가능)
+    // 초록색 배경 감지 및 제거 함수 (임계값 조정)
     function processFrame() {
       if (!isVideoPlaying || video.paused || video.ended) {
         return;
@@ -181,31 +180,21 @@
       let l = frame.data.length / 4;
 
       // 크로마키 색상 (초록색 범위) 정의
-      // 이 값들을 조절하여 원하는 초록색 배경을 더 잘 제거할 수 있어
-      const keyColor = { r: 0, g: 255, b: 0 }; // 순수한 초록색 (기준)
-      const threshold = 100; // 초록색으로 간주할 오차 범위 (0-255)
-      const similarity = 0.5; // 색상 유사성 (0-1, 높을수록 엄격)
-      const smooth = 0.1; // 가장자리 부드럽게 (0-1)
+      // 이 값들을 조절해서 초록색 배경을 최대한 깔끔하게 없애도록 수정했어
+      const greenThreshold = 80; // 초록색의 최소 밝기 (이 값보다 어두우면 초록색이 아닐 확률 높음)
+      const colorDifference = 50; // 초록색과 다른 색상(R, B)의 차이. 이 차이보다 G가 크면 초록색으로 간주.
 
       for (let i = 0; i < l; i++) {
         let r = frame.data[i * 4 + 0];
         let g = frame.data[i * 4 + 1];
         let b = frame.data[i * 4 + 2];
 
-        // 색상 간의 거리 계산
-        let dist = Math.sqrt(
-          (r - keyColor.r) * (r - keyColor.r) +
-          (g - keyColor.g) * (g - keyColor.g) +
-          (b - keyColor.b) * (b - keyColor.b)
-        );
-
-        // 만약 색상이 초록색 범위에 있다면 투명하게 처리
-        if (g > r && g > b && g > threshold && dist < 150) { // g 값이 r,b보다 높고 특정 임계값 이상이면 초록색으로 간주
-          // 단순 투명 처리 대신 좀 더 부드럽게 처리
-          let factor = Math.min(dist / threshold, 1);
-          frame.data[i * 4 + 3] = 255 * factor; // 알파값 조정
+        // G 값이 R, B 값보다 명확히 높고, G 값이 일정 임계값 이상이면 초록색으로 간주
+        // RGB 색상 조합에 따라 이 조건은 조정이 필요할 수 있어.
+        if (g > greenThreshold && g > (r + b) / 2 + colorDifference && g > r + 10 && g > b + 10) {
+            frame.data[i * 4 + 3] = 0; // 알파값을 0으로, 완전히 투명하게 만듦
         } else {
-           frame.data[i * 4 + 3] = 255; // 아니면 불투명
+            frame.data[i * 4 + 3] = 255; // 아니면 불투명
         }
       }
       chromakeyCtx.putImageData(frame, 0, 0);
@@ -219,10 +208,8 @@
     // 비디오가 재생 준비되면 자동 재생 시작 시도
     video.addEventListener('canplay', () => {
       video.play().catch(error => {
-        // 자동 재생 실패 시 (예: 브라우저 정책) 사용자에게 재생 버튼 표시 등
         console.log("Autoplay was prevented:", error);
-        // 사용자에게 비디오 재생을 요청하는 UI를 보여줄 수 있어
-        // 예: 재생 버튼을 만들어 클릭 시 video.play() 실행
+        // 자동 재생 실패 시 (예: 브라우저 정책) 사용자에게 재생 버튼 표시 등
       });
     });
 
@@ -231,7 +218,8 @@
         if (isVideoPlaying) {
             processFrame();
         } else {
-            requestAnimationFrame(drawFrame); // 재생 대기
+            // 비디오가 재생될 때까지 대기
+            requestAnimationFrame(drawFrame);
         }
     }
 
