@@ -3,50 +3,26 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>꺄룰랭 - 엉덩이 춤추는 캐릭터 (초절정 화려함)</title>
+  <title>겨울 배경 미소년 애니메이션</title>
 
-  <!-- 파비콘 추가 -->
+  <!-- 파비콘 추가 (기존 유지) -->
   <link rel="icon" type="image/png" href="파비콘.png" />
 
   <style>
-    /* 🔥 배경 그라데이션 애니메이션 키프레임 (대각선 움직임) */
-    @keyframes diagonal-gradient-move {
-        0% { background-position: 0% 0%; }
-        100% { background-position: 100% 100%; }
-    }
-
-    /* ☁️ 구름 움직임 애니메이션 키프레임 */
-    @keyframes cloud-move {
-        0% { background-position: 0% 50%; }
-        100% { background-position: 200% 50%; } /* 더 멀리 이동하도록 */
-    }
-
-    /* 기본 HTML, BODY 스타일 */
+    /* 기본 HTML, BODY 스타일 - 너가 요청한 겨울 분위기 그라데이션 배경으로 변경 */
     html, body {
       margin: 0; padding: 0;
       width: 100%; height: 100%;
       overflow: hidden; /* 스크롤바 숨기기 */
       font-family: 'Arial', sans-serif;
-      color: white;
+      color: #333; /* 글씨 색상 조정 (흰 배경에 대비되게) */
       text-align: center;
       position: relative;
     }
 
-    /* 🔥 더 화려하고 움직이는 배경 그라데이션 적용 */
     body {
-      /* 검정, 보라, 파랑, 자주색 대각선 그라데이션 */
-      background: linear-gradient(
-        135deg, /* 대각선 방향 */
-        #000000, /* 검정 */
-        #30005a, /* 짙은 보라 */
-        #00004d, /* 짙은 파랑 */
-        #5a004d, /* 짙은 자주색 */
-        #30005a,
-        #000000
-      );
-      background-size: 400% 400%; /* 그라데이션 사이즈를 키워 움직일 여유 공간 확보 */
-      animation: diagonal-gradient-move 20s ease infinite alternate; /* 20초 동안 애니메이션 무한 반복, 왔다갔다 (alternate) */
-
+      /* 흰색, 연한 하늘색 그라데이션 (겨울 분위기) */
+      background: linear-gradient(135deg, #e0f2f7 0%, #ffffff 50%, #e0f2f7 100%);
       display: flex;
       justify-content: center;
       align-items: center;
@@ -55,27 +31,7 @@
       padding: 20px;
     }
 
-    /* ☁️ 구름 레이어 스타일 */
-    .clouds {
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      z-index: 1; /* 파티클 위, 다른 요소들 아래 */
-      pointer-events: none; /* 마우스 이벤트 무시 */
-      /* 구름 효과: 여러 개의 원형 그라데이션 조합 */
-      background-image:
-        radial-gradient(circle at 10% 20%, rgba(255,255,255,0.15) 0%, rgba(255,255,255,0) 70%),
-        radial-gradient(circle at 70% 80%, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0) 60%),
-        radial-gradient(circle at 30% 60%, rgba(255,255,255,0.12) 0%, rgba(255,255,255,0) 80%),
-        radial-gradient(circle at 90% 40%, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0) 50%);
-      background-size: 150% 150%, 180% 180%, 130% 130%, 160% 160%; /* 구름 크기 조절 */
-      animation: cloud-move 50s linear infinite; /* 느리게 이동하는 애니메이션 */
-    }
-
-
-    /* 파티클 캔버스 스타일 */
+    /* 파티클 캔버스 스타일 (기존 유지, z-index만 조정) */
     canvas#particle-canvas {
       position: fixed; /* 화면에 고정 */
       top: 0; left: 0;
@@ -85,205 +41,200 @@
       display: block;
     }
 
-    h1 {
-      font-size: 2.5rem;
-      text-shadow: 2px 2px 5px rgba(0,0,0,0.7);
-      margin-bottom: 40px;
-      position: relative; /* 다른 요소들 위에 */
-      z-index: 10;
-    }
-
-    /* 캐릭터 컨테이너 */
-    .character-container {
+    /* 크로마키 비디오/캔버스 컨테이너 */
+    .video-chromakey-container {
       position: relative;
-      width: 300px;
-      height: 400px;
-      cursor: pointer;
-      margin: 0 auto;
-      z-index: 5; /* 파티클 위, 텍스트 아래에 위치 */
+      width: 640px; /* 원하는 비디오 너비 */
+      height: 360px; /* 원하는 비디오 높이 (16:9 비율 예시) */
+      max-width: 90vw; /* 화면 너비에 따라 반응형 조절 */
+      max-height: 90vh; /* 화면 높이에 따라 반응형 조절 */
+      overflow: hidden; /* 혹시 모를 오버플로우 방지 */
+      z-index: 10; /* 배경보다 앞에 위치 */
+      box-shadow: 0 0 30px rgba(0, 0, 0, 0.2); /* 입체감 효과 */
+      border-radius: 10px; /* 부드러운 모서리 */
     }
 
-    /* 파츠 이미지 기본 스타일 */
-    .character-container img {
-      position: absolute;
-      top: 0;
-      left: 0;
+    /* 비디오 요소 자체는 화면에 보이지 않게 하고 캔버스에 그릴 것 */
+    #mi_sonyeon_video {
+      display: none;
+    }
+
+    /* 크로마키 결과가 그려질 캔버스 */
+    #chromakey_canvas {
       width: 100%;
-      height: auto;
-      user-select: none;
-      pointer-events: none;
-    }
-
-    /* 머리 좌우 흔들기 애니메이션 */
-    @keyframes headShake {
-      0%, 100% { transform: translateX(0); }
-      25% { transform: translateX(5px); }
-      50% { transform: translateX(-5px); }
-      75% { transform: translateX(5px); }
-    }
-
-    /* 바지 좌우 움직임 (머리와 반대방향) 애니메이션 */
-    @keyframes pantsShake {
-      0%, 100% { transform: translateX(0); }
-      25% { transform: translateX(-5px); }
-      50% { transform: translateX(5px); }
-      75% { transform: translateX(-5px); }
-    }
-
-    /* 애니메이션 및 Z-Index 적용 */
-    .head {
-      animation: headShake 1.5s ease-in-out infinite;
-      z-index: 1; /* 맨 아래 */
-    }
-
-    .pants {
-      animation: pantsShake 1.5s ease-in-out infinite;
-      z-index: 2;
-    }
-
-    .clothes {
-      z-index: 3;
-    }
-
-    .hood {
-      z-index: 4; /* 맨 위 */
-    }
-
-    /* 🌎 CSS 지구본 스타일 */
-    @keyframes earth-rotate {
-      0% { background-position: 0 0; }
-      100% { background-position: -400% 0; } /* 지구본 텍스쳐가 계속 흐르는 느낌 */
-    }
-
-    .css-earth {
-      position: fixed; /* 화면에 고정 */
-      top: 20px;
-      right: 20px;
-      width: 80px; /* 지구본 크기 */
-      height: 80px; /* 지구본 크기 */
-      border-radius: 50%; /* 완벽한 원 */
-      background: 
-        radial-gradient(circle at 30% 30%, #a8e0ff 0%, #007bff 40%, #0056b3 100%) /* 바다 느낌 */
-        ,linear-gradient(120deg, transparent 45%, rgba(0,128,0,0.4) 50%, rgba(0,128,0,0.6) 55%, transparent 60%) /* 육지 느낌 (간단화) */
-        ,linear-gradient(-30deg, transparent 35%, rgba(0,128,0,0.3) 40%, rgba(0,128,0,0.5) 45%, transparent 50%) /* 추가 육지 느낌 */
-        ;
-      background-size: cover, 100% 100%, 100% 100%; /* 배경 이미지 크기 */
-      background-repeat: no-repeat;
-      box-shadow: 0 0 15px rgba(0, 128, 255, 0.7); /* 빛나는 효과 */
-      overflow: hidden; /* 테두리 밖으로 넘치는 부분 숨김 */
-      z-index: 100; /* 모든 UI 요소보다 위에 */
-      animation: earth-rotate 20s linear infinite; /* 자전 애니메이션 */
+      height: 100%;
+      display: block;
+      background-color: transparent; /* 초기 배경 투명 */
     }
   </style>
 </head>
 <body>
-  <h1>✨ 엉덩이 춤 추는 캐릭터 ✨</h1>
 
-  <div class="character-container">
-    <img src="머리.png" alt="머리" class="head" />
-    <img src="바지.png" alt="바지" class="pants" />
-    <img src="옷.png" alt="옷" class="clothes" />
-    <img src="후드.png" alt="후드" class="hood" />
-  </div>
-
-  <!-- 파티클을 그릴 캔버스 요소 -->
+  <!-- 흰 파티클을 그릴 캔버스 -->
   <canvas id="particle-canvas"></canvas>
 
-  <!-- ☁️ 움직이는 구름 레이어 -->
-  <div class="clouds"></div>
+  <!-- 크로마키 비디오/캔버스 컨테이너 -->
+  <div class="video-chromakey-container">
+    <!-- 초록색 배경의 미소년 동영상이 로드될 비디오 태그 -->
+    <video id="mi_sonyeon_video" src="미소년 동영상.mp4" preload="auto" loop muted autoplay></video>
+    <!-- 크로마키 처리된 미소년 동영상이 그려질 캔버스 -->
+    <canvas id="chromakey_canvas"></canvas>
+  </div>
 
-  <!-- 🌎 CSS 지구본 추가 -->
-  <div class="css-earth"></div>
-
-  <!-- 파티클 애니메이션 자바스크립트 -->
   <script>
-    const canvas = document.getElementById('particle-canvas');
-    const ctx = canvas.getContext('2d');
-
-    let w, h;
-    const particleCount = 200; // 파티클(별) 개수 조절
+    // ⭐️ 파티클 JavaScript (새로 추가)
+    const particleCanvas = document.getElementById('particle-canvas');
+    const particleCtx = particleCanvas.getContext('2d');
     let particles = [];
-    
-    // 🎨 다양한 파티클 색상 배열
-    const particleColors = [
-      'rgba(255, 165, 0,',   // 주황
-      'rgba(255, 255, 0,',   // 노랑
-      'rgba(0, 191, 255,',   // 진한 파랑 (Deep Sky Blue)
-      'rgba(255, 69, 0,',    // 오렌지 레드
-      'rgba(147, 112, 219,', // 미디엄 퍼플
-      'rgba(255, 255, 255,'  // 하양
-    ];
+    const particleCount = 100;
+    const particleColor = 'rgba(255, 255, 255, 0.7)'; // 흰색 파티클
 
-    // 캔버스 크기를 화면에 맞게 조절
-    function resize() {
-      w = window.innerWidth;
-      h = window.innerHeight;
-      canvas.width = w;
-      canvas.height = h;
-    }
-    window.addEventListener('resize', resize);
-    resize();
-
-    // 개별 파티클 생성자
-    function Particle() {
-      this.x = Math.random() * w; // 초기 X 위치 (랜덤)
-      this.y = Math.random() * h; // 초기 Y 위치 (랜덤)
-      this.radius = Math.random() * 1.5 + 0.5; // 파티클 크기 (랜덤)
-      this.speedX = (Math.random() - 0.5) * 0.1; // X축 이동 속도 (미세한 좌우 흔들림)
-      this.speedY = Math.random() * 2 + 1; // 🚀 Y축 이동 속도 (아래로 쏟아지는 속도)
-      this.alpha = Math.random(); // 불투명도 (깜빡임 효과에 사용)
-      this.alphaChange = 0.01 + Math.random() * 0.01; // 불투명도 변화 속도
-      // 파티클 색상 랜덤 지정
-      this.color = particleColors[Math.floor(Math.random() * particleColors.length)];
-    }
-
-    // 파티클 업데이트 (움직임, 깜빡임)
-    Particle.prototype.update = function() {
-      this.x += this.speedX;
-      this.y += this.speedY; // 쏟아지는 효과를 위해 speedY만 주로 사용
-
-      // 화면 밖으로 나가면 (아래로 쏟아지면) 위에서 다시 나타남
-      if(this.y > h) {
-        this.y = 0; // 최상단으로 이동
-        this.x = Math.random() * w; // x 위치도 다시 랜덤으로
-      }
-      // x축은 계속 캔버스 내에서 움직이도록 (좌우 미세 이동)
-      if(this.x > w) this.x = 0; else if(this.x < 0) this.x = w;
-
-
-      // 깜빡임 효과 (불투명도 조절)
-      this.alpha += this.alphaChange;
-      if(this.alpha <= 0.1 || this.alpha >= 1) this.alphaChange *= -1;
-    }
-
-    // 파티클 그리기
-    Particle.prototype.draw = function() {
-      ctx.beginPath();
-      ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
-      ctx.fillStyle = `${this.color} ${this.alpha})`; 
-      ctx.fill();
-    }
-
-    // 모든 파티클 초기화
-    function initParticles() {
+    function resizeParticleCanvas() {
+      particleCanvas.width = window.innerWidth;
+      particleCanvas.height = window.innerHeight;
       particles = [];
-      for(let i = 0; i < particleCount; i++) {
+      for (let i = 0; i < particleCount; i++) {
         particles.push(new Particle());
       }
     }
+    window.addEventListener('resize', resizeParticleCanvas);
+    resizeParticleCanvas();
 
-    // 애니메이션 루프 (반복적으로 파티클 업데이트 및 그리기)
-    function animateParticles() {
-      ctx.clearRect(0, 0, w, h); // 캔버스 지우기
-      particles.forEach(p => {
-        p.update(); // 위치 업데이트
-        p.draw();   // 다시 그리기
-      });
-      requestAnimationFrame(animateParticles); // 다음 프레임 요청
+    function Particle() {
+      this.x = Math.random() * particleCanvas.width;
+      this.y = Math.random() * particleCanvas.height;
+      this.size = Math.random() * 2 + 1; // 1 to 3
+      this.speedX = Math.random() * 0.5 - 0.25; // -0.25 to 0.25
+      this.speedY = Math.random() * 1.5 + 0.5; // 0.5 to 2 (아래로 흐르는 느낌)
     }
 
-    initParticles(); // 파티클 초기화
-    animateParticles(); // 애니메이션 시작
+    Particle.prototype.update = function() {
+      this.x += this.speedX;
+      this.y += this.speedY;
+
+      if (this.y > particleCanvas.height) { // 아래로 사라지면 위에서 다시 나타남
+        this.y = -this.size;
+        this.x = Math.random() * particleCanvas.width;
+      }
+      if (this.x > particleCanvas.width || this.x < -this.size) { // 좌우 경계 넘어가면 다시 나타남
+        this.x = Math.random() * particleCanvas.width;
+      }
+    };
+
+    Particle.prototype.draw = function() {
+      particleCtx.fillStyle = particleColor;
+      particleCtx.beginPath();
+      particleCtx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+      particleCtx.fill();
+    };
+
+    function animateParticles() {
+      particleCtx.clearRect(0, 0, particleCanvas.width, particleCanvas.height);
+      for (let i = 0; i < particles.length; i++) {
+        particles[i].update();
+        particles[i].draw();
+      }
+      requestAnimationFrame(animateParticles);
+    }
+    animateParticles();
+
+    // ⭐️ 크로마키 JavaScript (새로 추가)
+    const video = document.getElementById('mi_sonyeon_video');
+    const chromakeyCanvas = document.getElementById('chromakey_canvas');
+    const chromakeyCtx = chromakeyCanvas.getContext('2d', { willReadFrequently: true }); // 성능 최적화
+
+    let isVideoPlaying = false; // 비디오 재생 상태 추적
+
+    video.addEventListener('loadedmetadata', () => {
+      // 비디오 메타데이터 로드 후 캔버스 크기 설정
+      chromakeyCanvas.width = video.videoWidth;
+      chromakeyCanvas.height = video.videoHeight;
+      // 비디오가 컨테이너에 맞춰지도록 스타일 업데이트 (이 부분은 CSS로 처리될 수 있음)
+      // video-chromakey-container의 width/height와 같도록 설정
+      document.querySelector('.video-chromakey-container').style.width = `${video.videoWidth}px`;
+      document.querySelector('.video-chromakey-container').style.height = `${video.videoHeight}px`;
+    });
+
+    video.addEventListener('play', () => {
+      isVideoPlaying = true;
+      drawFrame(); // 비디오 재생 시작 시 프레임 그리기 시작
+    });
+
+    video.addEventListener('pause', () => {
+      isVideoPlaying = false;
+    });
+    video.addEventListener('ended', () => {
+      isVideoPlaying = false;
+    });
+
+    // 초록색 배경 감지 및 제거 함수 (임계값 조정 가능)
+    function processFrame() {
+      if (!isVideoPlaying || video.paused || video.ended) {
+        return;
+      }
+
+      // 캔버스에 비디오 프레임 그리기
+      chromakeyCtx.drawImage(video, 0, 0, chromakeyCanvas.width, chromakeyCanvas.height);
+
+      // 픽셀 데이터 가져오기
+      let frame = chromakeyCtx.getImageData(0, 0, chromakeyCanvas.width, chromakeyCanvas.height);
+      let l = frame.data.length / 4;
+
+      // 크로마키 색상 (초록색 범위) 정의
+      // 이 값들을 조절하여 원하는 초록색 배경을 더 잘 제거할 수 있어
+      const keyColor = { r: 0, g: 255, b: 0 }; // 순수한 초록색 (기준)
+      const threshold = 100; // 초록색으로 간주할 오차 범위 (0-255)
+      const similarity = 0.5; // 색상 유사성 (0-1, 높을수록 엄격)
+      const smooth = 0.1; // 가장자리 부드럽게 (0-1)
+
+      for (let i = 0; i < l; i++) {
+        let r = frame.data[i * 4 + 0];
+        let g = frame.data[i * 4 + 1];
+        let b = frame.data[i * 4 + 2];
+
+        // 색상 간의 거리 계산
+        let dist = Math.sqrt(
+          (r - keyColor.r) * (r - keyColor.r) +
+          (g - keyColor.g) * (g - keyColor.g) +
+          (b - keyColor.b) * (b - keyColor.b)
+        );
+
+        // 만약 색상이 초록색 범위에 있다면 투명하게 처리
+        if (g > r && g > b && g > threshold && dist < 150) { // g 값이 r,b보다 높고 특정 임계값 이상이면 초록색으로 간주
+          // 단순 투명 처리 대신 좀 더 부드럽게 처리
+          let factor = Math.min(dist / threshold, 1);
+          frame.data[i * 4 + 3] = 255 * factor; // 알파값 조정
+        } else {
+           frame.data[i * 4 + 3] = 255; // 아니면 불투명
+        }
+      }
+      chromakeyCtx.putImageData(frame, 0, 0);
+
+      // 다음 프레임 그리기 요청
+      if (isVideoPlaying) {
+        requestAnimationFrame(processFrame);
+      }
+    }
+
+    // 비디오가 재생 준비되면 자동 재생 시작 시도
+    video.addEventListener('canplay', () => {
+      video.play().catch(error => {
+        // 자동 재생 실패 시 (예: 브라우저 정책) 사용자에게 재생 버튼 표시 등
+        console.log("Autoplay was prevented:", error);
+        // 사용자에게 비디오 재생을 요청하는 UI를 보여줄 수 있어
+        // 예: 재생 버튼을 만들어 클릭 시 video.play() 실행
+      });
+    });
+
+    // 페이지 로드 후 처음 한 번 drawFrame 호출
+    function drawFrame() {
+        if (isVideoPlaying) {
+            processFrame();
+        } else {
+            requestAnimationFrame(drawFrame); // 재생 대기
+        }
+    }
+
   </script>
 </body>
 </html>
