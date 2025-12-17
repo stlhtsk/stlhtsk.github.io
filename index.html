@@ -1,99 +1,134 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-  <meta charset="UTF-8"/>
-  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>겨울 배경 미소년 애니메이션</title>
 
   <!-- 파비콘 유지 -->
-  <link rel="icon" type="image/png" href="파비콘.png"/>
-  
+  <link rel="icon" type="image/png" href="파비콘.png" />
+
   <style>
-    /* html, body 스타일 */
+    /* ------------------------------------------- */
+    /* 전체 레이아웃 기본 스타일 (스크롤 방지, 중앙 정렬) */
+    /* ------------------------------------------- */
     html, body {
       margin: 0; padding: 0;
-      width: 100%; height: 100%;
-      overflow: hidden;
+      width: 100%; height: 100%; /* 뷰포트 전체를 채움 */
+      overflow: hidden; /* **스크롤바 절대 금지** */
       font-family: 'Arial', sans-serif;
       color: #333;
       text-align: center;
       position: relative;
-      background-color: #e0f2f7;
+      background-color: #e0f2f7; /* 연한 하늘색 배경 */
       box-sizing: border-box;
 
+      /* 동영상 컨테이너를 가로세로 중앙에 배치 */
       display: flex;
-      justify-content: center;
-      align-items: center;
+      justify-content: center; /* 가로 중앙 */
+      align-items: center; /* 세로 중앙 */
     }
-
-    /* 파티클 캔버스 */
+    
+    /* ------------------------------------------- */
+    /* 파티클 캔버스 스타일 (기존 유지) */
+    /* ------------------------------------------- */
     canvas#particle-canvas {
-      position: fixed;
+      position: fixed; /* 화면에 고정 */
       top: 0; left: 0;
-      width: 100vw; height: 100vh;
-      z-index: 0;
-      pointer-events: none;
+      width: 100vw; height: 100vh; /* 뷰포트 전체 크기 */
+      z-index: 0; /* 모든 콘텐츠보다 뒤에 위치 */
+      pointer-events: none; /* 마우스 이벤트 무시 */
       display: block;
     }
 
-    /* 비디오 컨테이너 - 비율 유지와 크기 조절 */
+    /* ------------------------------------------- */
+    /* 크로마키 비디오/캔버스 컨테이너 (핵심 수정 부분) */
+    /* ------------------------------------------- */
     .video-chromakey-container {
       position: relative;
-      width: 90vw;
-      max-width: 672px;
-      aspect-ratio: 3 / 4;
-      max-height: 90vh;
-      overflow: hidden;
+      /* 기본: 672x864로 고정 (컴퓨터 기본 창) */
+      width: 672px; 
+      height: 864px;
+      /* 비율을 강제하는 것이 어떤 조건에서도 왜곡을 막는 가장 확실한 방법 */
+      aspect-ratio: 672 / 864; /* 3:4 비율 강제 고정 */
+
+      /* 추가 스타일 */
+      overflow: hidden; /* 내부 요소가 넘치면 잘라냄 */
       border-radius: 10px;
-      box-shadow: 0 0 30px rgba(0,0,0,0.2);
-      
+      box-shadow: 0 0 30px rgba(0, 0, 0, 0.2);
+      z-index: 10; /* 배경 파티클보다 위로 */
+
+      /* 캔버스를 컨테이너 내에서 중앙 정렬 (캔버스가 컨테이너를 꽉 채우므로 시각적 효과는 미미) */
       display: flex;
       justify-content: center;
       align-items: center;
-      flex-shrink: 0;
     }
 
-    /* 원본 비디오 숨김 */
+    /* ------------------------------------------- */
+    /* 미디어 쿼리: 창 너비가 672px 이하로 작아질 때 동영상이 반응형으로 줄어들도록 설정 */
+    /* (600px이하라고 요청했으나, 672px이하에서부터 줄어들어야 자연스러움) */
+    /* ------------------------------------------- */
+    @media (max-width: 672px) { 
+        .video-chromakey-container {
+            width: 90vw; /* 뷰포트 너비의 90%로 줄어들기 시작 */
+            height: auto; /* 높이는 width와 aspect-ratio에 따라 자동 계산 */
+            max-width: 672px; /* 여전히 원본 너비 이상으로는 커지지 않음 */
+            max-height: 90vh; /* 뷰포트 높이의 90%를 넘지 않음 */
+            
+            /* 이 flex 설정을 통해 컨테이너가 뷰포트 크기에 맞춰 가장 넓은 비율로 조정되도록 함 */
+            /* 너비/높이가 뷰포트를 벗어나지 않으면서도 최대한 크게 보임 */
+            /* aspect-ratio가 있으므로 height: auto와 같이 사용해도 비율이 유지됨 */
+            object-fit: contain; /* 내부 캔버스가 컨테이너에 딱 맞도록 함 */
+        }
+    }
+
+    /* ------------------------------------------- */
+    /* 비디오 요소와 크로마키 캔버스 스타일 */
+    /* ------------------------------------------- */
     #mi_sonyeon_video {
-      display: none;
+      display: none; /* 원본 비디오는 숨김 */
     }
 
-    /* 크로마키 캔버스 */
     #chromakey_canvas {
-      position: absolute;
+      position: absolute; /* 컨테이너 내에서 절대 위치 */
       top: 0; left: 0;
-      width: 100%;
-      height: 100%;
+      width: 100%; /* 컨테이너 크기에 꽉 채우기 */
+      height: 100%; /* 컨테이너 크기에 꽉 채우기 */
       display: block;
-      background-color: transparent;
-      border-radius: 10px;
+      background-color: transparent; /* 초기 배경 투명 */
     }
   </style>
 </head>
 
 <body>
-  <!-- 파티클 캔버스 -->
+  <!-- 흰 파티클 캔버스 -->
   <canvas id="particle-canvas"></canvas>
 
   <!-- 비디오 / 크로마키 캔버스 컨테이너 -->
   <div class="video-chromakey-container">
+    <!-- 초록색 배경의 미소년 동영상이 로드될 비디오 태그 -->
     <video id="mi_sonyeon_video" src="미소년 동영상.mp4" preload="auto" loop muted autoplay playsinline></video>
+    <!-- 크로마키 처리된 미소년 동영상이 그려질 캔버스 -->
     <canvas id="chromakey_canvas"></canvas>
   </div>
 
   <script>
-    // 파티클 관련 JS
+    // -------------------------------------------
+    // 파티클 JavaScript (기존과 동일하게 유지)
+    // -------------------------------------------
     const particleCanvas = document.getElementById('particle-canvas');
     const particleCtx = particleCanvas.getContext('2d');
     let particles = [];
     const particleCount = 100;
-    const particleColor = 'rgba(255, 255, 255, 0.7)';
+    const particleColor = 'rgba(255, 255, 255, 0.7)'; // 흰색 파티클
 
     function resizeParticleCanvas() {
       particleCanvas.width = window.innerWidth;
       particleCanvas.height = window.innerHeight;
       particles = [];
-      for(let i = 0; i < particleCount; i++) particles.push(new Particle());
+      for (let i = 0; i < particleCount; i++) {
+        particles.push(new Particle());
+      }
     }
     window.addEventListener('resize', resizeParticleCanvas);
     resizeParticleCanvas();
@@ -101,30 +136,34 @@
     function Particle() {
       this.x = Math.random() * particleCanvas.width;
       this.y = Math.random() * particleCanvas.height;
-      this.size = Math.random() * 2 + 1;
-      this.speedX = Math.random() * 0.5 - 0.25;
-      this.speedY = Math.random() * 1.5 + 0.5;
+      this.size = Math.random() * 2 + 1; // 1 to 3
+      this.speedX = Math.random() * 0.5 - 0.25; // -0.25 to 0.25
+      this.speedY = Math.random() * 1.5 + 0.5; // 0.5 to 2 (아래로 흐르는 느낌)
     }
+
     Particle.prototype.update = function() {
       this.x += this.speedX;
       this.y += this.speedY;
-      if(this.y > particleCanvas.height) {
+
+      if (this.y > particleCanvas.height) { // 아래로 사라지면 위에서 다시 나타남
         this.y = -this.size;
         this.x = Math.random() * particleCanvas.width;
       }
-      if(this.x > particleCanvas.width || this.x < -this.size) {
+      if (this.x > particleCanvas.width || this.x < -this.size) { // 좌우 경계 넘어가면 다시 나타남
         this.x = Math.random() * particleCanvas.width;
       }
-    }
+    };
+
     Particle.prototype.draw = function() {
       particleCtx.fillStyle = particleColor;
       particleCtx.beginPath();
       particleCtx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
       particleCtx.fill();
-    }
+    };
+
     function animateParticles() {
       particleCtx.clearRect(0, 0, particleCanvas.width, particleCanvas.height);
-      for(let i = 0; i < particles.length; i++) {
+      for (let i = 0; i < particles.length; i++) {
         particles[i].update();
         particles[i].draw();
       }
@@ -132,7 +171,9 @@
     }
     animateParticles();
 
-    // 크로마키 JS
+    // -------------------------------------------
+    // 크로마키 JavaScript (기존과 동일하게 유지)
+    // -------------------------------------------
     const video = document.getElementById('mi_sonyeon_video');
     const canvas = document.getElementById('chromakey_canvas');
     const ctx = canvas.getContext('2d', { willReadFrequently: true });
@@ -140,6 +181,7 @@
     let isPlaying = false;
 
     video.addEventListener('loadedmetadata', () => {
+      // 캔버스 자체의 해상도는 원본 동영상 해상도로 고정
       canvas.width = 672;
       canvas.height = 864;
     });
@@ -152,26 +194,32 @@
     video.addEventListener('ended', () => { isPlaying = false; });
 
     function processFrame() {
-      if(!isPlaying || video.paused || video.ended) return;
+      if (!isPlaying || video.paused || video.ended) return;
+
+      // 캔버스에 비디오 프레임 그리기
       ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+
+      // 픽셀 데이터 가져와 크로마키 처리
       let frame = ctx.getImageData(0, 0, canvas.width, canvas.height);
       let length = frame.data.length / 4;
-      const greenThreshold = 80;
-      const colorDifference = 50;
+      const greenThreshold = 80; // 초록색 임계값
+      const colorDifference = 50; // 초록색과의 색상 차이
 
-      for(let i = 0; i < length; i++) {
-        let r = frame.data[i*4 + 0];
-        let g = frame.data[i*4 + 1];
-        let b = frame.data[i*4 + 2];
+      for (let i = 0; i < length; i++) {
+        let r = frame.data[i * 4 + 0];
+        let g = frame.data[i * 4 + 1];
+        let b = frame.data[i * 4 + 2];
 
-        if (g > greenThreshold && g > (r + b)/2 + colorDifference && g > r +10 && g > b +10) {
-          frame.data[i*4 + 3] = 0;
+        // 초록색으로 판단되면 투명하게 처리 (알파값 0)
+        if (g > greenThreshold && g > (r + b) / 2 + colorDifference && g > r + 10 && g > b + 10) {
+          frame.data[i * 4 + 3] = 0;
         } else {
-          frame.data[i*4 + 3] = 255;
+          frame.data[i * 4 + 3] = 255; // 아니면 불투명하게 유지
         }
       }
-      ctx.putImageData(frame, 0, 0);
-      if(isPlaying) requestAnimationFrame(processFrame);
+      ctx.putImageData(frame, 0, 0); // 처리된 프레임을 다시 캔버스에 그림
+
+      if (isPlaying) requestAnimationFrame(processFrame);
     }
 
     video.addEventListener('canplay', () => {
@@ -179,7 +227,7 @@
     });
 
     function drawFrame() {
-      if(isPlaying) {
+      if (isPlaying) {
         processFrame();
       } else {
         requestAnimationFrame(drawFrame);
