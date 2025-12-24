@@ -116,9 +116,10 @@
             overflow-y: auto; /* 메인 콘텐츠 영역에서만 스크롤이 발생하도록 함 */
             display: flex;
             flex-direction: column;
-            justify-content: center; /* 가로/세로 중앙 정렬을 위한 기본 설정 */
+            justify-content: flex-start; /* 콘텐츠를 위에서부터 시작하도록 변경 */
             align-items: center;
-            padding: 20px;
+            /* 헤더 때문에 잘리지 않도록 상단 패딩 추가 */
+            padding: 20px 20px 20px 20px; /* 상단 패딩 추가 */
             text-align: center;
             -webkit-overflow-scrolling: touch; /* iOS 부드러운 스크롤 */
         }
@@ -128,14 +129,16 @@
             display: none; /* 기본적으로 숨김 */
             width: 100%;
             max-width: 1200px;
+            /* main-content의 padding-top이 이미 공간을 확보했으므로 margin-top은 제거 */
+            margin-top: 0;
+            padding-top: 0; /* 이전에 있던 불필요한 padding-top 제거 */
             padding-bottom: 20px; /* 하단 여백 */
-            /* 이제 .main-content가 스크롤을 담당하므로 여기서 max-height와 overflow-y 제거 */
         }
 
         .gallery-section h2 {
             text-align: center;
             margin-bottom: 30px;
-            margin-top: 0;
+            margin-top: 0; /* 헤더와의 간격은 main-content의 padding이 처리하도록 함 */
         }
 
         .image-grid {
@@ -252,7 +255,6 @@
         // 페이지 로드 시 기본 메시지 표시 (갤러리 섹션이 열려있지 않으면)
         document.addEventListener('DOMContentLoaded', () => {
             const defaultMessage = document.getElementById('default-message');
-            // 어떤 갤러리 섹션도 'block' 상태가 아니면 default-message를 보여줌
             let gallerySectionVisible = false;
             document.querySelectorAll('.gallery-section').forEach(section => {
                 if (section.style.display === 'block') {
