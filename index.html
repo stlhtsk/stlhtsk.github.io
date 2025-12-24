@@ -121,38 +121,50 @@
             margin-top: 20px;
             width: 100%;
             max-width: 1200px;
+            /* 사이드바가 열릴 때 main-content를 밀어내는 대신,
+               사이드바 위에 겹치게 하려면 여기 margin-left를 제거하거나 0으로 설정 */
+            margin-left: 0;
         }
 
         .gallery-section h2 {
             text-align: center;
             margin-bottom: 30px;
+            margin-top: 0;
         }
 
         .image-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); /* 반응형 그리드 */
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); /* 반응형 그리드 */
             gap: 20px;
             padding: 20px;
+            margin: 0 auto; /* 그리드 자체도 중앙 정렬 */
+            max-width: 100%;
         }
 
         .image-placeholder {
             background-color: #e0e0e0;
             border: 1px solid #ccc;
-            height: 200px; /* 이미지 높이 */
+            height: 150px; /* 이미지 높이 */
             display: flex;
             justify-content: center;
             align-items: center;
             color: #666;
-            font-size: 1.2em;
+            font-size: 1em; /* 글씨 크기 조정 */
             text-align: center;
             border-radius: 8px;
             overflow: hidden;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
         }
 
         .image-placeholder img {
             width: 100%;
             height: 100%;
             object-fit: cover; /* 이미지가 틀에 꽉 차게 */
+        }
+
+        /* 기본 메시지는 갤러리 섹션이 보일 때 숨겨지도록 */
+        #default-message {
+            display: block; /* 초기에는 보임 */
         }
     </style>
 </head>
@@ -178,13 +190,38 @@
         <div id="lhw-gallery" class="gallery-section">
             <h2>LHW 갤러리</h2>
             <div class="image-grid">
-                <div class="image-placeholder">이미지 1</div>
-                <div class="image-placeholder">이미지 2</div>
-                <div class="image-placeholder">이미지 3</div>
-                <div class="image-placeholder">이미지 4</div>
-                <div class="image-placeholder">이미지 5</div>
-                <div class="image-placeholder">이미지 6</div>
-                <!-- 더 많은 이미지를 위한 플레이스홀더 추가 가능 -->
+                <!-- LHW-1 부터 LHW-31까지 -->
+                <div class="image-placeholder">LHW-1</div>
+                <div class="image-placeholder">LHW-2</div>
+                <div class="image-placeholder">LHW-3</div>
+                <div class="image-placeholder">LHW-4</div>
+                <div class="image-placeholder">LHW-5</div>
+                <div class="image-placeholder">LHW-6</div>
+                <div class="image-placeholder">LHW-7</div>
+                <div class="image-placeholder">LHW-8</div>
+                <div class="image-placeholder">LHW-9</div>
+                <div class="image-placeholder">LHW-10</div>
+                <div class="image-placeholder">LHW-11</div>
+                <div class="image-placeholder">LHW-12</div>
+                <div class="image-placeholder">LHW-13</div>
+                <div class="image-placeholder">LHW-14</div>
+                <div class="image-placeholder">LHW-15</div>
+                <div class="image-placeholder">LHW-16</div>
+                <div class="image-placeholder">LHW-17</div>
+                <div class="image-placeholder">LHW-18</div>
+                <div class="image-placeholder">LHW-19</div>
+                <div class="image-placeholder">LHW-20</div>
+                <div class="image-placeholder">LHW-21</div>
+                <div class="image-placeholder">LHW-22</div>
+                <div class="image-placeholder">LHW-23</div>
+                <div class="image-placeholder">LHW-24</div>
+                <div class="image-placeholder">LHW-25</div>
+                <div class="image-placeholder">LHW-26</div>
+                <div class="image-placeholder">LHW-27</div>
+                <div class="image-placeholder">LHW-28</div>
+                <div class="image-placeholder">LHW-29</div>
+                <div class="image-placeholder">LHW-30</div>
+                <div class="image-placeholder">LHW-31</div>
             </div>
         </div>
 
@@ -211,9 +248,17 @@
             document.getElementById('menu-toggle').checked = false;
         }
 
-        // 페이지 로드 시 기본 메시지 표시
+        // 페이지 로드 시 기본 메시지 표시 (갤러리 섹션이 열려있지 않으면)
         document.addEventListener('DOMContentLoaded', () => {
-            document.getElementById('default-message').style.display = 'block';
+            // 초기 로드 시 어떤 갤러리도 활성화되지 않은 상태라면 '갤러리' 텍스트 표시
+            const defaultMessage = document.getElementById('default-message');
+            const lhwGallery = document.getElementById('lhw-gallery');
+
+            if (lhwGallery.style.display === 'none' || lhwGallery.style.display === '') {
+                defaultMessage.style.display = 'block';
+            } else {
+                defaultMessage.style.display = 'none';
+            }
         });
     </script>
 </body>
