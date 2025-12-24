@@ -10,6 +10,9 @@
             font-family: Arial, sans-serif;
             background-color: #f8f8f8;
             color: #333;
+            display: flex; /* Flexbox를 사용하여 전체 페이지를 정렬 */
+            flex-direction: column; /* 세로 방향으로 정렬 */
+            min-height: 100vh; /* 뷰포트 높이의 최소값으로 설정 */
         }
 
         /* 헤더 스타일 */
@@ -18,7 +21,7 @@
             padding: 20px;
             text-align: center;
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-            position: relative; /* 햄버거 메뉴 위치를 위해 */
+            position: relative;
         }
 
         h1 {
@@ -28,7 +31,7 @@
 
         /* 햄버거 메뉴 버튼 스타일 */
         .menu-toggle {
-            display: none; /* 체크박스를 숨김 */
+            display: none;
         }
 
         .hamburger-icon {
@@ -39,7 +42,7 @@
             top: 25px;
             left: 20px;
             cursor: pointer;
-            z-index: 1001; /* 사이드바 위로 표시 */
+            z-index: 1001;
         }
 
         .hamburger-icon span {
@@ -71,7 +74,7 @@
         /* 사이드바 스타일 */
         .sidebar {
             height: 100%;
-            width: 0; /* 초기에는 숨김 */
+            width: 0;
             position: fixed;
             top: 0;
             left: 0;
@@ -99,19 +102,57 @@
 
         /* 햄버거 메뉴 활성화 시 사이드바 표시 */
         .menu-toggle:checked ~ .sidebar {
-            width: 250px; /* 사이드바를 펼침 */
+            width: 250px;
         }
 
-        /* 메인 콘텐츠 영역 (사이드바에 겹치지 않게 조절) */
+        /* 메인 콘텐츠 영역 - 화면 중앙 정렬 */
         .main-content {
+            flex-grow: 1; /* 남은 공간을 모두 차지 */
+            display: flex;
+            justify-content: center; /* 가로 중앙 정렬 */
+            align-items: center; /* 세로 중앙 정렬 */
             padding: 20px;
-            transition: margin-left .5s;
-            margin-left: 0; /* 사이드바 닫혔을 때 */
+            text-align: center;
         }
 
-        /* 사이드바 열렸을 때 메인 콘텐츠 밀기 (선택 사항) */
-        .menu-toggle:checked ~ .main-content {
-            /* margin-left: 250px; /* 사이드바 너비만큼 밀어냄 */
+        /* 갤러리 섹션 스타일 */
+        .gallery-section {
+            display: none; /* 기본적으로 숨김 */
+            margin-top: 20px;
+            width: 100%;
+            max-width: 1200px;
+        }
+
+        .gallery-section h2 {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .image-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); /* 반응형 그리드 */
+            gap: 20px;
+            padding: 20px;
+        }
+
+        .image-placeholder {
+            background-color: #e0e0e0;
+            border: 1px solid #ccc;
+            height: 200px; /* 이미지 높이 */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: #666;
+            font-size: 1.2em;
+            text-align: center;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .image-placeholder img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover; /* 이미지가 틀에 꽉 차게 */
         }
     </style>
 </head>
@@ -124,7 +165,7 @@
     </label>
 
     <div class="sidebar">
-        <a href="#lhw">LHW</a>
+        <a href="#" onclick="showGallery('lhw-gallery'); return false;">LHW</a>
         <!-- 다른 카테고리들은 여기에 추가 예정 -->
     </div>
 
@@ -133,8 +174,47 @@
     </header>
 
     <div class="main-content">
-        <p>환영합니다. 여기에 갤러리 내용이 표시될 예정입니다.</p>
-        <p>나중에 다양한 이미지를 추가할 수 있습니다.</p>
+        <!-- LHW 갤러리 섹션 -->
+        <div id="lhw-gallery" class="gallery-section">
+            <h2>LHW 갤러리</h2>
+            <div class="image-grid">
+                <div class="image-placeholder">이미지 1</div>
+                <div class="image-placeholder">이미지 2</div>
+                <div class="image-placeholder">이미지 3</div>
+                <div class="image-placeholder">이미지 4</div>
+                <div class="image-placeholder">이미지 5</div>
+                <div class="image-placeholder">이미지 6</div>
+                <!-- 더 많은 이미지를 위한 플레이스홀더 추가 가능 -->
+            </div>
+        </div>
+
+        <!-- 기본 메시지 (갤러리가 활성화되지 않았을 때만 보이도록) -->
+        <p id="default-message">갤러리</p>
     </div>
+
+    <script>
+        function showGallery(galleryId) {
+            // 모든 갤러리 섹션 숨기기
+            document.querySelectorAll('.gallery-section').forEach(section => {
+                section.style.display = 'none';
+            });
+            // 기본 메시지 숨기기
+            document.getElementById('default-message').style.display = 'none';
+
+            // 선택된 갤러리 섹션만 보여주기
+            const selectedGallery = document.getElementById(galleryId);
+            if (selectedGallery) {
+                selectedGallery.style.display = 'block';
+            }
+
+            // 메뉴 닫기 (선택 사항)
+            document.getElementById('menu-toggle').checked = false;
+        }
+
+        // 페이지 로드 시 기본 메시지 표시
+        document.addEventListener('DOMContentLoaded', () => {
+            document.getElementById('default-message').style.display = 'block';
+        });
+    </script>
 </body>
 </html>
