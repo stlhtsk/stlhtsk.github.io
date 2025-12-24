@@ -109,8 +109,9 @@
         .main-content {
             flex-grow: 1; /* 남은 공간을 모두 차지 */
             display: flex;
-            justify-content: center; /* 가로 중앙 정렬 */
-            align-items: center; /* 세로 중앙 정렬 */
+            flex-direction: column; /* 자식 요소를 세로로 배열 */
+            justify-content: center; /* 세로 중앙 정렬 */
+            align-items: center; /* 가로 중앙 정렬 */
             padding: 20px;
             text-align: center;
         }
@@ -118,25 +119,26 @@
         /* 갤러리 섹션 스타일 */
         .gallery-section {
             display: none; /* 기본적으로 숨김 */
-            margin-top: 20px;
             width: 100%;
             max-width: 1200px;
-            /* 사이드바가 열릴 때 main-content를 밀어내는 대신,
-               사이드바 위에 겹치게 하려면 여기 margin-left를 제거하거나 0으로 설정 */
-            margin-left: 0;
+            margin-top: 0; /* 헤더 아래에서 시작하도록 조정 */
+            overflow-y: auto; /* 내용이 넘칠 경우 스크롤 허용 */
+            max-height: calc(100vh - 100px); /* 헤더를 제외한 높이 */
+            -webkit-overflow-scrolling: touch; /* iOS 부드러운 스크롤 */
+            padding-bottom: 20px; /* 하단 여백 */
         }
 
         .gallery-section h2 {
             text-align: center;
             margin-bottom: 30px;
-            margin-top: 0;
+            margin-top: 0; /* 갤러리 섹션 내부에서 상단 여백 제거 */
         }
 
         .image-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); /* 반응형 그리드 */
             gap: 20px;
-            padding: 20px;
+            padding: 0 20px; /* 좌우 패딩 */
             margin: 0 auto; /* 그리드 자체도 중앙 정렬 */
             max-width: 100%;
         }
@@ -146,6 +148,7 @@
             border: 1px solid #ccc;
             height: 150px; /* 이미지 높이 */
             display: flex;
+            flex-direction: column; /* 이미지와 텍스트를 세로로 정렬 */
             justify-content: center;
             align-items: center;
             color: #666;
@@ -158,13 +161,28 @@
 
         .image-placeholder img {
             width: 100%;
-            height: 100%;
+            height: calc(100% - 20px); /* 이미지 영역을 전체에서 텍스트 높이만큼 줄임 */
             object-fit: cover; /* 이미지가 틀에 꽉 차게 */
+            display: block; /* 이미지 하단 공백 제거 */
         }
+        .image-placeholder span {
+            font-size: 0.9em;
+            color: #444;
+            margin-top: 5px; /* 이미지와 텍스트 사이 간격 */
+        }
+
 
         /* 기본 메시지는 갤러리 섹션이 보일 때 숨겨지도록 */
         #default-message {
             display: block; /* 초기에는 보임 */
+            margin-top: auto; /* Flexbox 하단에 배치 */
+            margin-bottom: auto; /* Flexbox 상단에 배치 */
+            flex-grow: 1; /* 중앙 정렬 유지 */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 2em; /* 갤러리 텍스트 크기 */
+            color: #555;
         }
     </style>
 </head>
@@ -190,38 +208,17 @@
         <div id="lhw-gallery" class="gallery-section">
             <h2>LHW 갤러리</h2>
             <div class="image-grid">
-                <!-- LHW-1 부터 LHW-31까지 -->
-                <div class="image-placeholder">LHW-1</div>
-                <div class="image-placeholder">LHW-2</div>
-                <div class="image-placeholder">LHW-3</div>
-                <div class="image-placeholder">LHW-4</div>
-                <div class="image-placeholder">LHW-5</div>
-                <div class="image-placeholder">LHW-6</div>
-                <div class="image-placeholder">LHW-7</div>
-                <div class="image-placeholder">LHW-8</div>
-                <div class="image-placeholder">LHW-9</div>
-                <div class="image-placeholder">LHW-10</div>
-                <div class="image-placeholder">LHW-11</div>
-                <div class="image-placeholder">LHW-12</div>
-                <div class="image-placeholder">LHW-13</div>
-                <div class="image-placeholder">LHW-14</div>
-                <div class="image-placeholder">LHW-15</div>
-                <div class="image-placeholder">LHW-16</div>
-                <div class="image-placeholder">LHW-17</div>
-                <div class="image-placeholder">LHW-18</div>
-                <div class="image-placeholder">LHW-19</div>
-                <div class="image-placeholder">LHW-20</div>
-                <div class="image-placeholder">LHW-21</div>
-                <div class="image-placeholder">LHW-22</div>
-                <div class="image-placeholder">LHW-23</div>
-                <div class="image-placeholder">LHW-24</div>
-                <div class="image-placeholder">LHW-25</div>
-                <div class="image-placeholder">LHW-26</div>
-                <div class="image-placeholder">LHW-27</div>
-                <div class="image-placeholder">LHW-28</div>
-                <div class="image-placeholder">LHW-29</div>
-                <div class="image-placeholder">LHW-30</div>
-                <div class="image-placeholder">LHW-31</div>
+                <script>
+                    // JavaScript로 LHW-1.png부터 LHW-31.png까지 동적으로 생성
+                    for (let i = 1; i <= 31; i++) {
+                        document.write(`
+                            <div class="image-placeholder">
+                                <img src="LHW-${i}.png" alt="LHW-${i}">
+                                <span>LHW-${i}</span>
+                            </div>
+                        `);
+                    }
+                </script>
             </div>
         </div>
 
@@ -242,6 +239,8 @@
             const selectedGallery = document.getElementById(galleryId);
             if (selectedGallery) {
                 selectedGallery.style.display = 'block';
+                // 갤러리가 나타날 때 스크롤을 맨 위로 올림
+                selectedGallery.scrollTop = 0;
             }
 
             // 메뉴 닫기 (선택 사항)
@@ -250,12 +249,17 @@
 
         // 페이지 로드 시 기본 메시지 표시 (갤러리 섹션이 열려있지 않으면)
         document.addEventListener('DOMContentLoaded', () => {
-            // 초기 로드 시 어떤 갤러리도 활성화되지 않은 상태라면 '갤러리' 텍스트 표시
             const defaultMessage = document.getElementById('default-message');
-            const lhwGallery = document.getElementById('lhw-gallery');
+            // 어떤 갤러리 섹션도 'block' 상태가 아니면 default-message를 보여줌
+            let gallerySectionVisible = false;
+            document.querySelectorAll('.gallery-section').forEach(section => {
+                if (section.style.display === 'block') {
+                    gallerySectionVisible = true;
+                }
+            });
 
-            if (lhwGallery.style.display === 'none' || lhwGallery.style.display === '') {
-                defaultMessage.style.display = 'block';
+            if (!gallerySectionVisible) {
+                defaultMessage.style.display = 'flex'; // 중앙 정렬을 위해 flex로 변경
             } else {
                 defaultMessage.style.display = 'none';
             }
